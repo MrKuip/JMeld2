@@ -1,11 +1,10 @@
 package org.jmeld.ui.swing.table.util;
 
-import javax.swing.*;
-import javax.swing.table.*;
-
-import java.awt.*;
-import java.util.*;
+import java.awt.Component;
 import java.util.List;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
 
 public class JMComboBoxRenderer
     extends JComboBox
@@ -21,8 +20,12 @@ public class JMComboBoxRenderer
     this(items.toArray());
   }
 
-  public Component getTableCellRendererComponent(JTable table, Object value,
-      boolean isSelected, boolean hasFocus, int row, int column)
+  public Component getTableCellRendererComponent(JTable table,
+      Object value,
+      boolean isSelected,
+      boolean hasFocus,
+      int row,
+      int column)
   {
     if (isSelected)
     {

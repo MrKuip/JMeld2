@@ -1,17 +1,36 @@
 package org.jmeld.ui.dnd;
 
-import org.jmeld.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.*;
-
-import javax.swing.*;
-
-import java.awt.*;
-import java.awt.datatransfer.*;
-import java.awt.dnd.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.net.URL;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import org.jmeld.JMeld;
+import org.jmeld.ui.util.ColorUtil;
+import org.jmeld.ui.util.Colors;
+import org.jmeld.util.StringUtil;
 
 public class DragAndDropPanel
     extends JPanel
@@ -25,17 +44,21 @@ public class DragAndDropPanel
   {
     setOpaque(true);
     setBackground(Color.white);
-    setBorder(BorderFactory.createCompoundBorder(BorderFactory
-        .createLineBorder(Color.LIGHT_GRAY), BorderFactory.createEmptyBorder(3,
-      3, 3, 3)));
+    setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                                                 BorderFactory.createEmptyBorder(3,
+                                                                                 3,
+                                                                                 3,
+                                                                                 3)));
 
-    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+    setLayout(new BoxLayout(this,
+                            BoxLayout.X_AXIS));
 
     leftDragAndDropArea = createDragAndDropArea();
     rightDragAndDropArea = createDragAndDropArea();
 
     add(leftDragAndDropArea);
-    add(Box.createRigidArea(new Dimension(3, 0)));
+    add(Box.createRigidArea(new Dimension(3,
+                                          0)));
     add(rightDragAndDropArea);
 
     addHierarchyListener(getHierarchyListener());
@@ -77,8 +100,14 @@ public class DragAndDropPanel
 
         if (orgGlassPane == null)
         {
-          glassPane = new JPanel(new GridLayout(0, 2, 40, 40));
-          glassPane.setBorder(BorderFactory.createEmptyBorder(60, 10, 40, 10));
+          glassPane = new JPanel(new GridLayout(0,
+                                                2,
+                                                40,
+                                                40));
+          glassPane.setBorder(BorderFactory.createEmptyBorder(60,
+                                                              10,
+                                                              40,
+                                                              10));
           glassPane.setOpaque(false);
 
           glassPane.add(createDropPane(leftFileName));
@@ -103,11 +132,17 @@ public class DragAndDropPanel
         label.setFont(label.getFont().deriveFont(16.0f));
 
         p = new JPanel(new BorderLayout());
-        p.add(label, BorderLayout.CENTER);
-        p.setBackground(new Color(238, 227, 187, 200));
-        p.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-            .createLineBorder(Color.GRAY), BorderFactory.createEmptyBorder(10,
-          10, 10, 10)));
+        p.add(label,
+              BorderLayout.CENTER);
+        p.setBackground(new Color(238,
+                                  227,
+                                  187,
+                                  200));
+        p.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY),
+                                                       BorderFactory.createEmptyBorder(10,
+                                                                                       10,
+                                                                                       10,
+                                                                                       10)));
 
         return p;
       }
@@ -217,7 +252,8 @@ public class DragAndDropPanel
     p.setOpaque(true);
     p.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     p.setBackground(ColorUtil.brighter(Color.LIGHT_GRAY));
-    p.setPreferredSize(new Dimension(20, 0));
+    p.setPreferredSize(new Dimension(20,
+                                     0));
 
     return p;
   }
@@ -228,8 +264,7 @@ public class DragAndDropPanel
     {
       public void mousePressed(MouseEvent me)
       {
-        if (StringUtil.isEmpty(leftFileName)
-            || StringUtil.isEmpty(rightFileName))
+        if (StringUtil.isEmpty(leftFileName) || StringUtil.isEmpty(rightFileName))
         {
           return;
         }
@@ -244,9 +279,8 @@ public class DragAndDropPanel
 
         try
         {
-          JMeld.getJMeldPanel().openComparison(
-            new File(new URL(leftFileName).toURI()).getAbsolutePath(),
-            new File(new URL(rightFileName).toURI()).getAbsolutePath());
+          JMeld.getJMeldPanel().openComparison(new File(new URL(leftFileName).toURI()).getAbsolutePath(),
+                                               new File(new URL(rightFileName).toURI()).getAbsolutePath());
         }
         catch (Exception ex)
         {

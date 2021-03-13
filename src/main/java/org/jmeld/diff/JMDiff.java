@@ -16,19 +16,21 @@
  */
 package org.jmeld.diff;
 
-import org.jmeld.*;
-import org.jmeld.ui.text.*;
-import org.jmeld.util.*;
-import org.jmeld.util.file.*;
-
-import java.util.*;
-import java.nio.*;
+import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.jmeld.JMeldException;
+import org.jmeld.ui.text.AbstractBufferDocument;
+import org.jmeld.util.Ignore;
+import org.jmeld.util.StopWatch;
+import org.jmeld.util.file.CompareUtil;
 
 public class JMDiff
 {
   // Class variables:
   // Allocate a charBuffer once for performance. The charbuffer is used to
-  //   store a 'line' without it's ignored characters. 
+  // store a 'line' without it's ignored characters.
   static final private CharBuffer inputLine = CharBuffer.allocate(10000);
   static final private CharBuffer outputLine = CharBuffer.allocate(10000);
   // Instance variables:
@@ -39,36 +41,39 @@ public class JMDiff
     MyersDiff myersDiff;
 
     // Timing/Memory (msec/Mb):
-    //                                             Myers  Eclipse GNU Hunt
-    //  ================================================================================
-    //  2 Totally different files  (116448 lines)  31317  1510    340 195
-    //  2 Totally different files  (232896 lines)  170673 212     788 354
-    //  2 Medium different files  (1778583 lines)  41     55      140 24679
-    //  2 Medium different files (10673406 lines)  216    922     632 >300000
-    //  2 Equal files             (1778583 lines)  32     55      133 24632
-    //  2 Equal files            (10673406 lines)  121    227     581 >60000
+    // Myers Eclipse GNU Hunt
+    // ================================================================================
+    // 2 Totally different files (116448 lines) 31317 1510 340 195
+    // 2 Totally different files (232896 lines) 170673 212 788 354
+    // 2 Medium different files (1778583 lines) 41 55 140 24679
+    // 2 Medium different files (10673406 lines) 216 922 632 >300000
+    // 2 Equal files (1778583 lines) 32 55 133 24632
+    // 2 Equal files (10673406 lines) 121 227 581 >60000
     myersDiff = new MyersDiff();
     myersDiff.checkMaxTime(true);
 
     // MyersDiff is the fastest but can be very slow when 2 files
-    //   are very different.
+    // are very different.
     algorithms = new ArrayList<JMDiffAlgorithmIF>();
-    //algorithms.add(myersDiff);
+    // algorithms.add(myersDiff);
 
     // GNUDiff is a little bit slower than Myersdiff but performs way
-    //   better if the files are very different.
+    // better if the files are very different.
     // Don't use it for now because of GPL
-    //algorithms.add(new GNUDiff());
+    // algorithms.add(new GNUDiff());
 
     // EclipseDiff looks like Myersdiff but is slower.
     // It performs much better if the files are totally different
-    algorithms.add(new EclipseDiff());
+    //algorithms.add(new EclipseDiff());
+    algorithms.add(new Eclipse2Diff());
 
     // HuntDiff (from netbeans) is very, very slow
-    //algorithms.add(new HuntDiff());
+    // algorithms.add(new HuntDiff());
   }
 
-  public JMRevision diff(List<String> a, List<String> b, Ignore ignore)
+  public JMRevision diff(List<String> a,
+      List<String> b,
+      Ignore ignore)
       throws JMeldException
   {
     if (a == null)
@@ -79,10 +84,14 @@ public class JMDiff
     {
       b = Collections.emptyList();
     }
-    return diff(a.toArray(), b.toArray(), ignore);
+    return diff(a.toArray(),
+                b.toArray(),
+                ignore);
   }
 
-  public JMRevision diff(Object[] a, Object[] b, Ignore ignore)
+  public JMRevision diff(Object[] a,
+      Object[] b,
+      Ignore ignore)
       throws JMeldException
   {
     JMRevision revision;
@@ -97,15 +106,16 @@ public class JMDiff
 
     if (org == null)
     {
-      org = new Object[] {};
-    }
-    if (rev == null)
-    {
-      rev = new Object[] {};
+      org = new Object[]{};
     }
 
-    if (org instanceof AbstractBufferDocument.Line[]
-        && rev instanceof AbstractBufferDocument.Line[])
+    if (rev == null)
+    {
+      rev = new Object[]{};
+    }
+
+    if (ignore != Ignore.NULL_IGNORE
+        || (org instanceof AbstractBufferDocument.Line[] && rev instanceof AbstractBufferDocument.Line[]))
     {
       filtered = true;
     }
@@ -119,8 +129,10 @@ public class JMDiff
 
     if (filtered)
     {
-      org = filter(ignore, org);
-      rev = filter(ignore, rev);
+      org = filter(ignore,
+                   org);
+      rev = filter(ignore,
+                   rev);
     }
 
     filteredTime = sp.getElapsedTime();
@@ -129,20 +141,25 @@ public class JMDiff
     {
       try
       {
-        revision = algorithm.diff(org, rev);
+        revision = algorithm.diff(org,
+                                  rev);
         revision.setIgnore(ignore);
-        revision.update(a, b);
+        revision.update(a,
+                        b);
         //revision.filter();
         if (filtered)
         {
-          adjustRevision(revision, a, (JMString[]) org, b, (JMString[]) rev);
+          adjustRevision(revision,
+                         a,
+                         (JMString[]) org,
+                         b,
+                         (JMString[]) rev);
         }
 
         if (a.length > 1000)
         {
-          System.out.println("diff took " + sp.getElapsedTime()
-                             + " msec. [filter=" + filteredTime + " msec]["
-                             + algorithm.getClass() + "]");
+          System.out.println("diff took " + sp.getElapsedTime() + " msec. [filter=" + filteredTime + " msec]["
+              + algorithm.getClass() + "]");
         }
 
         return revision;
@@ -151,8 +168,7 @@ public class JMDiff
       {
         if (ex.getCause() instanceof MaxTimeExceededException)
         {
-          System.out.println("Time exceeded for " + algorithm.getClass()
-                             + ": try next algorithm");
+          System.out.println("Time exceeded for " + algorithm.getClass() + ": try next algorithm");
         }
         else
         {
@@ -164,8 +180,10 @@ public class JMDiff
     return null;
   }
 
-  private void adjustRevision(JMRevision revision, Object[] orgArray,
-      JMString[] orgArrayFiltered, Object[] revArray,
+  private void adjustRevision(JMRevision revision,
+      Object[] orgArray,
+      JMString[] orgArrayFiltered,
+      Object[] revArray,
       JMString[] revArrayFiltered)
   {
     JMChunk chunk;
@@ -176,7 +194,7 @@ public class JMDiff
     for (JMDelta delta : revision.getDeltas())
     {
       chunk = delta.getOriginal();
-      //System.out.print("  original=" + chunk);
+      // System.out.print(" original=" + chunk);
       index = chunk.getAnchor();
       if (index < orgArrayFiltered.length)
       {
@@ -196,24 +214,21 @@ public class JMDiff
           size = orgArrayFiltered[index].lineNumber - anchor + 1;
         }
         /*
-           index += chunk.getSize();
-           if (index < orgArrayFiltered.length)
-           {
-             size = orgArrayFiltered[index].lineNumber - anchor;
-           }
+         * index += chunk.getSize(); if (index < orgArrayFiltered.length) { size =
+         * orgArrayFiltered[index].lineNumber - anchor; }
          */
       }
       chunk.setAnchor(anchor);
       chunk.setSize(size);
-      //System.out.println(" => " + chunk);
+      // System.out.println(" => " + chunk);
 
       chunk = delta.getRevised();
-      //System.out.print("  revised=" + chunk);
+      // System.out.print(" revised=" + chunk);
       index = chunk.getAnchor();
       if (index < revArrayFiltered.length)
       {
-        //System.out.print(" [index=" + index + ", text="
-        //+ revArrayFiltered[index].s + "]");
+        // System.out.print(" [index=" + index + ", text="
+        // + revArrayFiltered[index].s + "]");
         anchor = revArrayFiltered[index].lineNumber;
       }
       else
@@ -229,20 +244,18 @@ public class JMDiff
           size = revArrayFiltered[index].lineNumber - anchor + 1;
         }
         /*
-           index += chunk.getSize();
-           if (index < revArrayFiltered.length)
-           {
-             size = revArrayFiltered[index].lineNumber - anchor;
-           }
+         * index += chunk.getSize(); if (index < revArrayFiltered.length) { size =
+         * revArrayFiltered[index].lineNumber - anchor; }
          */
       }
       chunk.setAnchor(anchor);
       chunk.setSize(size);
-      //System.out.println(" => " + chunk);
+      // System.out.println(" => " + chunk);
     }
   }
 
-  private JMString[] filter(Ignore ignore, Object[] array)
+  private JMString[] filter(Ignore ignore,
+      Object[] array)
   {
     List<JMString> result;
     JMString jms;
@@ -250,7 +263,7 @@ public class JMDiff
 
     synchronized (inputLine)
     {
-      //System.out.println("> start");
+      // System.out.println("> start");
       result = new ArrayList<JMString>(array.length);
       lineNumber = -1;
       for (Object o : array)
@@ -259,7 +272,9 @@ public class JMDiff
 
         inputLine.clear();
         inputLine.put(o.toString());
-        CompareUtil.removeIgnoredChars(inputLine, ignore, outputLine);
+        CompareUtil.removeIgnoredChars(inputLine,
+                                       ignore,
+                                       outputLine);
         if (outputLine.remaining() == 0)
         {
           continue;
@@ -270,7 +285,7 @@ public class JMDiff
         jms.lineNumber = lineNumber;
         result.add(jms);
 
-        //System.out.println("  " + jms);
+        // System.out.println(" " + jms);
       }
     }
 

@@ -1,11 +1,10 @@
 package org.jmeld.util.file.cmd;
 
-import org.jmeld.util.file.*;
-import org.jmeld.util.node.*;
-
-import javax.swing.undo.*;
-
-import java.io.*;
+import java.io.File;
+import javax.swing.undo.CannotUndoException;
+import org.jmeld.util.file.FileUtil;
+import org.jmeld.util.node.FileNode;
+import org.jmeld.util.node.JMDiffNode;
 
 public class RemoveFileCmd
     extends AbstractCmd
@@ -13,7 +12,8 @@ public class RemoveFileCmd
   private JMDiffNode diffNode;
   private FileNode fileNode;
 
-  public RemoveFileCmd(JMDiffNode diffNode, FileNode fileNode)
+  public RemoveFileCmd(JMDiffNode diffNode,
+      FileNode fileNode)
   {
     this.diffNode = diffNode;
     this.fileNode = fileNode;
@@ -42,14 +42,16 @@ public class RemoveFileCmd
     {
       if (file.exists())
       {
-        originalFile = FileUtil.createTempFile("jmeld", "backup");
+        originalFile = FileUtil.createTempFile("jmeld",
+                                               "backup");
 
         if (debug)
         {
           System.out.println("copy : " + file + " -> " + originalFile);
         }
 
-        FileUtil.copy(file, originalFile);
+        FileUtil.copy(file,
+                      originalFile);
       }
 
       if (debug)
@@ -69,7 +71,8 @@ public class RemoveFileCmd
           {
             System.out.println("copy : " + originalFile + " -> " + file);
           }
-          FileUtil.copy(originalFile, file);
+          FileUtil.copy(originalFile,
+                        file);
         }
       }
       catch (Exception ex)

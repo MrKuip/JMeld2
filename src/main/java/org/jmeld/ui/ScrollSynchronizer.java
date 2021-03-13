@@ -16,17 +16,21 @@
  */
 package org.jmeld.ui;
 
-import org.jmeld.diff.*;
-import org.jmeld.ui.text.*;
-import org.jmeld.util.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.util.List;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.text.JTextComponent;
+import org.jmeld.diff.JMChunk;
+import org.jmeld.diff.JMDelta;
+import org.jmeld.diff.JMRevision;
+import org.jmeld.ui.text.BufferDocumentIF;
+import org.jmeld.util.DiffUtil;
 
 public class ScrollSynchronizer
 {
@@ -36,7 +40,8 @@ public class ScrollSynchronizer
   private AdjustmentListener horizontalAdjustmentListener;
   private AdjustmentListener verticalAdjustmentListener;
 
-  public ScrollSynchronizer(BufferDiffPanel diffPanel, FilePanel filePanelLeft,
+  public ScrollSynchronizer(BufferDiffPanel diffPanel,
+      FilePanel filePanelLeft,
       FilePanel filePanelRight)
   {
     this.diffPanel = diffPanel;
@@ -92,14 +97,17 @@ public class ScrollSynchronizer
 
     if (leftScrolled)
     {
-      line = DiffUtil.getRevisedLine(revision, line);
+      line = DiffUtil.getRevisedLine(revision,
+                                     line);
     }
     else
     {
-      line = DiffUtil.getOriginalLine(revision, line);
+      line = DiffUtil.getOriginalLine(revision,
+                                      line);
     }
 
-    scrollToLine(fp2, line);
+    scrollToLine(fp2,
+                 line);
   }
 
   void toNextDelta(boolean next)
@@ -183,14 +191,16 @@ public class ScrollSynchronizer
 
     if (toDelta != null)
     {
-      scrollToLine(filePanelLeft, toDelta.getOriginal().getAnchor());
+      scrollToLine(filePanelLeft,
+                   toDelta.getOriginal().getAnchor());
       scroll(true);
     }
   }
 
   void showDelta(JMDelta delta)
   {
-    scrollToLine(filePanelLeft, delta.getOriginal().getAnchor());
+    scrollToLine(filePanelLeft,
+                 delta.getOriginal().getAnchor());
     scroll(true);
   }
 
@@ -225,7 +235,8 @@ public class ScrollSynchronizer
     return line;
   }
 
-  public void scrollToLine(FilePanel fp, int line)
+  public void scrollToLine(FilePanel fp,
+      int line)
   {
     JScrollPane scrollPane;
     FilePanel fp2;
@@ -361,8 +372,7 @@ public class ScrollSynchronizer
             return;
           }
 
-          if (filePanelLeft.getScrollPane().getHorizontalScrollBar() == e
-              .getSource())
+          if (filePanelLeft.getScrollPane().getHorizontalScrollBar() == e.getSource())
           {
             scFrom = filePanelLeft.getScrollPane().getHorizontalScrollBar();
             scTo = filePanelRight.getScrollPane().getHorizontalScrollBar();
@@ -406,8 +416,7 @@ public class ScrollSynchronizer
             return;
           }
 
-          if (filePanelLeft.getScrollPane().getVerticalScrollBar() == e
-              .getSource())
+          if (filePanelLeft.getScrollPane().getVerticalScrollBar() == e.getSource())
           {
             leftScrolled = true;
           }

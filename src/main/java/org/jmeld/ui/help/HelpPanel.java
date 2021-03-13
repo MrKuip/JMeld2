@@ -4,25 +4,19 @@
  */
 package org.jmeld.ui.help;
 
-import org.jmeld.settings.*;
-import org.jmeld.ui.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.conf.*;
-import org.jmeld.util.prefs.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.BorderLayout;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JSplitPane;
+import org.jmeld.ui.AbstractContentPanel;
+import org.jmeld.ui.JMeldPanel;
 
 /**
  *
- * @author  kees
+ * @author kees
  */
 public class HelpPanel
-       extends AbstractContentPanel
+    extends AbstractContentPanel
 {
   private JMeldPanel mainPanel;
 
@@ -36,16 +30,20 @@ public class HelpPanel
   private void init()
   {
     JSplitPane splitPane;
-    JList      urlList;
+    JList urlList;
 
-    urlList = new JList(new String[] { "Shortcuts", "Licenses" });
+    urlList = new JList(new String[]
+    {
+        "Shortcuts", "Licenses"
+    });
 
     splitPane = new JSplitPane();
     splitPane.setLeftComponent(urlList);
     splitPane.setRightComponent(new JButton("hhaa"));
 
     setLayout(new BorderLayout());
-    add(splitPane, BorderLayout.CENTER);
+    add(splitPane,
+        BorderLayout.CENTER);
   }
 
   class HelpURI
@@ -53,9 +51,8 @@ public class HelpPanel
     private String name;
     private String resourceName;
 
-    HelpURI(
-      String name,
-      String resourceName)
+    HelpURI(String name,
+        String resourceName)
     {
       this.name = name;
       this.resourceName = resourceName;

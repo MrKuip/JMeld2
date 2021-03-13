@@ -4,29 +4,35 @@
  */
 package org.jmeld.ui.settings;
 
-import org.jmeld.settings.*;
-import org.jmeld.ui.*;
-import org.jmeld.ui.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.conf.*;
-import org.jmeld.util.prefs.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import org.jmeld.settings.JMeldSettings;
+import org.jmeld.ui.JMeldPanel;
+import org.jmeld.ui.StatusBar;
+import org.jmeld.ui.util.Icons;
+import org.jmeld.ui.util.ImageUtil;
+import org.jmeld.util.conf.ConfigurationListenerIF;
+import org.jmeld.util.conf.ConfigurationManager;
+import org.jmeld.util.prefs.FileChooserPreference;
 
 /**
  *
- * @author  kees
+ * @author kees
  */
 public class SettingsPanel
     extends SettingsPanelForm
     implements ConfigurationListenerIF
 {
-  private DefaultListModel listModel;
+  private DefaultListModel<Settings> listModel;
   private JMeldPanel mainPanel;
 
   public SettingsPanel(JMeldPanel mainPanel)
@@ -44,23 +50,28 @@ public class SettingsPanel
     settingsPanel.setLayout(new CardLayout());
     for (Settings setting : Settings.values())
     {
-      settingsPanel.add(setting.getPanel(), setting.getName());
+      settingsPanel.add(setting.getPanel(),
+                        setting.getName());
     }
 
-    initButton(saveButton, "stock_save", "Save settings");
-    saveButton.addActionListener(getSaveAction());
+    initButton(saveButton,
+               Icons.SAVE,
+               "Save settings");
+    saveButton.addActionListener(this::doSaveAction);
 
-    initButton(saveAsButton, "stock_save-as",
-      "Save settings to a different file");
-    saveAsButton.addActionListener(getSaveAsAction());
+    initButton(saveAsButton,
+               Icons.SAVE_AS,
+               "Save settings to a different file");
+    saveAsButton.addActionListener(this::doSaveAsAction);
 
-    initButton(reloadButton, "stock_reload",
-      "Reload settings from a different file");
-    reloadButton.addActionListener(getReloadAction());
+    initButton(reloadButton,
+               Icons.RELOAD,
+               "Reload settings from a different file");
+    reloadButton.addActionListener(this::doReloadAction);
 
     fileLabel.setText("");
 
-    listModel = new DefaultListModel();
+    listModel = new DefaultListModel<>();
     for (Settings setting : Settings.values())
     {
       listModel.addElement(setting);
@@ -68,116 +79,98 @@ public class SettingsPanel
     settingItems.setModel(listModel);
     settingItems.setCellRenderer(new SettingCellRenderer());
     settingItems.setSelectedIndex(0);
-    settingItems.addListSelectionListener(getSettingItemsAction());
+    settingItems.addListSelectionListener(this::doSettingItemsAction);
   }
 
-  private void initButton(JButton button, String iconName, String toolTipText)
+  private void initButton(JButton button,
+      Icons icon,
+      String toolTipText)
   {
-    ImageIcon icon;
-
     button.setText("");
     button.setToolTipText(toolTipText);
-    button.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+    button.setBorder(BorderFactory.createEmptyBorder(2,
+                                                     2,
+                                                     2,
+                                                     2));
     button.setContentAreaFilled(false);
-    icon = ImageUtil.getSmallImageIcon(iconName);
-    button.setIcon(icon);
-    button.setDisabledIcon(ImageUtil.createTransparentIcon(icon));
-    button.setPressedIcon(ImageUtil.createDarkerIcon(icon));
+    button.setIcon(icon.getSmallIcon());
+    button.setDisabledIcon(ImageUtil.createTransparentIcon(icon.getSmallIcon()));
+    button.setPressedIcon(ImageUtil.createDarkerIcon(icon.getSmallIcon()));
     button.setFocusable(false);
   }
 
-  public ActionListener getSaveAction()
+  public void doSaveAction(ActionEvent ae)
   {
-    return new ActionListener()
-    {
-      public void actionPerformed(ActionEvent ae)
-      {
-        getConfiguration().save();
-        StatusBar.getInstance().setText("Configuration saved");
-      }
-    };
+    getConfiguration().save();
+    StatusBar.getInstance().setText("Configuration saved");
   }
 
-  public ActionListener getSaveAsAction()
+  public void doSaveAsAction(ActionEvent ae)
   {
-    return new ActionListener()
+    JFileChooser chooser;
+    int result;
+    File file;
+    FileChooserPreference pref;
+    Window ancestor;
+
+    chooser = new JFileChooser();
+    chooser.setApproveButtonText("Save");
+    chooser.setDialogTitle("Save settings");
+    pref = new FileChooserPreference("SettingsSave",
+                                     chooser);
+
+    ancestor = SwingUtilities.getWindowAncestor((Component) ae.getSource());
+    result = chooser.showOpenDialog(ancestor);
+    if (result == JFileChooser.APPROVE_OPTION)
     {
-      public void actionPerformed(ActionEvent ae)
-      {
-        JFileChooser chooser;
-        int result;
-        File file;
-        FileChooserPreference pref;
-        Window ancestor;
-
-        chooser = new JFileChooser();
-        chooser.setApproveButtonText("Save");
-        chooser.setDialogTitle("Save settings");
-        pref = new FileChooserPreference("SettingsSave", chooser);
-
-        ancestor = SwingUtilities.getWindowAncestor((Component) ae.getSource());
-        result = chooser.showOpenDialog(ancestor);
-        if (result == JFileChooser.APPROVE_OPTION)
-        {
-          pref.save();
-          file = chooser.getSelectedFile();
-          getConfiguration().setConfigurationFile(file);
-          getConfiguration().save();
-          StatusBar.getInstance().setText("Configuration saved to " + file);
-        }
-      }
-    };
+      pref.save();
+      file = chooser.getSelectedFile();
+      getConfiguration().setConfigurationFile(file);
+      getConfiguration().save();
+      StatusBar.getInstance().setText("Configuration saved to " + file);
+    }
   }
 
-  public ActionListener getReloadAction()
+  public void doReloadAction(ActionEvent e)
   {
-    return new ActionListener()
+    JFileChooser chooser;
+    int result;
+    File file;
+    FileChooserPreference pref;
+    Window ancestor;
+
+    chooser = new JFileChooser();
+    chooser.setApproveButtonText("Reload");
+    chooser.setDialogTitle("Reload settings");
+    pref = new FileChooserPreference("SettingsSave",
+                                     chooser);
+
+    ancestor = SwingUtilities.getWindowAncestor((Component) e.getSource());
+    result = chooser.showOpenDialog(ancestor);
+    if (result == JFileChooser.APPROVE_OPTION)
     {
-      public void actionPerformed(ActionEvent ae)
+      pref.save();
+      file = chooser.getSelectedFile();
+      if (!ConfigurationManager.getInstance().reload(file,
+                                                     getConfiguration().getClass()))
       {
-        JFileChooser chooser;
-        int result;
-        File file;
-        FileChooserPreference pref;
-        Window ancestor;
-
-        chooser = new JFileChooser();
-        chooser.setApproveButtonText("Reload");
-        chooser.setDialogTitle("Reload settings");
-        pref = new FileChooserPreference("SettingsSave", chooser);
-
-        ancestor = SwingUtilities.getWindowAncestor((Component) ae.getSource());
-        result = chooser.showOpenDialog(ancestor);
-        if (result == JFileChooser.APPROVE_OPTION)
-        {
-          pref.save();
-          file = chooser.getSelectedFile();
-          if (!ConfigurationManager.getInstance().reload(file,
-            getConfiguration().getClass()))
-          {
-            StatusBar.getInstance().setAlarm("Failed to reload from " + file);
-          }
-        }
+        StatusBar.getInstance().setAlarm("Failed to reload from " + file);
       }
-    };
+    }
   }
 
-  public ListSelectionListener getSettingItemsAction()
+  public void doSettingItemsAction(ListSelectionEvent event)
   {
-    return new ListSelectionListener()
-    {
-      public void valueChanged(ListSelectionEvent event)
-      {
-        CardLayout layout;
-        Settings settings;
+    CardLayout layout;
+    Settings settings;
 
-        settings = (Settings) settingItems.getSelectedValue();
-        layout = (CardLayout) settingsPanel.getLayout();
-        layout.show(settingsPanel, settings.getName());
-      }
-    };
+    settings = (Settings) settingItems.getSelectedValue();
+    layout = (CardLayout) settingsPanel.getLayout();
+    layout.show(settingsPanel,
+                settings.getName());
   }
 
+  @Override
   public void configurationChanged()
   {
     initConfiguration();
@@ -193,6 +186,7 @@ public class SettingsPanel
     saveButton.setEnabled(c.isChanged());
   }
 
+  @Override
   public boolean checkSave()
   {
     SaveSettingsDialog dialog;

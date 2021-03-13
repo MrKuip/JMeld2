@@ -16,11 +16,13 @@
  */
 package org.jmeld.util.prefs;
 
-import javax.swing.*;
-import javax.swing.event.*;
-
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 public class ComboBoxPreference
     extends Preference
@@ -32,7 +34,8 @@ public class ComboBoxPreference
   private JComboBox target;
   private int maxItems = 10;
 
-  public ComboBoxPreference(String preferenceName, JComboBox target)
+  public ComboBoxPreference(String preferenceName,
+      JComboBox target)
   {
     super("ComboBox-" + preferenceName);
 
@@ -46,7 +49,8 @@ public class ComboBoxPreference
     DefaultComboBoxModel model;
 
     model = new DefaultComboBoxModel();
-    for (String item : getListOfString(ITEMS, maxItems))
+    for (String item : getListOfString(ITEMS,
+                                       maxItems))
     {
       model.addElement(item);
     }
@@ -89,7 +93,9 @@ public class ComboBoxPreference
       list.add(item);
     }
 
-    putListOfString(ITEMS, maxItems, list);
+    putListOfString(ITEMS,
+                    maxItems,
+                    list);
   }
 
   private ListDataListener getListDataListener()

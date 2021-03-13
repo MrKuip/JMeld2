@@ -16,14 +16,14 @@
  */
 package org.jmeld.ui;
 
-import org.jmeld.ui.swing.table.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.node.*;
-
-import javax.swing.*;
+import javax.swing.Icon;
+import org.jmeld.ui.swing.table.JMTreeTableModel;
+import org.jmeld.ui.util.Icons;
+import org.jmeld.util.node.BufferNode;
+import org.jmeld.util.node.JMDiffNode;
 
 public class FolderDiffTreeTableModel
-       extends JMTreeTableModel
+    extends JMTreeTableModel
 {
   private Column fileNameColumn;
   private Column leftSizeColumn;
@@ -33,21 +33,42 @@ public class FolderDiffTreeTableModel
 
   public FolderDiffTreeTableModel()
   {
-    fileNameColumn = addColumn("fileName", null, "File", null, -1, false);
-    leftSizeColumn = addColumn("leftSize", "Left", "Size", Integer.class, 8,
-        false);
-    leftStateColumn = addColumn("leftState", "Left", "L", Icon.class, 3, false);
-    rightStateColumn = addColumn("rightState", "Right", "R", Icon.class, 3,
-        false);
-    rightSizeColumn = addColumn("rightSize", "Right", "Size", Integer.class,
-        8, false);
+    fileNameColumn = addColumn("fileName",
+                               null,
+                               "File",
+                               null,
+                               -1,
+                               false);
+    leftSizeColumn = addColumn("leftSize",
+                               "Left",
+                               "Size",
+                               Integer.class,
+                               8,
+                               false);
+    leftStateColumn = addColumn("leftState",
+                                "Left",
+                                "L",
+                                Icon.class,
+                                3,
+                                false);
+    rightStateColumn = addColumn("rightState",
+                                 "Right",
+                                 "R",
+                                 Icon.class,
+                                 3,
+                                 false);
+    rightSizeColumn = addColumn("rightSize",
+                                "Right",
+                                "Size",
+                                Integer.class,
+                                8,
+                                false);
   }
 
-  public Object getValueAt(
-    Object objectNode,
-    Column column)
+  public Object getValueAt(Object objectNode,
+      Column column)
   {
-    UINode     uiNode;
+    UINode uiNode;
     JMDiffNode diffNode;
     BufferNode bufferNode;
 
@@ -61,7 +82,7 @@ public class FolderDiffTreeTableModel
 
     if (column == leftStateColumn)
     {
-      return ImageUtil.getSmallImageIcon(getLeftStateIconName(diffNode));
+      return getLeftStateIconName(diffNode);
     }
 
     if (column == leftSizeColumn)
@@ -82,7 +103,7 @@ public class FolderDiffTreeTableModel
 
     if (column == rightStateColumn)
     {
-      return ImageUtil.getSmallImageIcon(getRightStateIconName(diffNode));
+      return getRightStateIconName(diffNode);
     }
 
     if (column == rightSizeColumn)
@@ -104,48 +125,67 @@ public class FolderDiffTreeTableModel
     return null;
   }
 
-  public void setValueAt(
-    Object value,
-    Object objectNode,
-    Column column)
+  public void setValueAt(Object value,
+      Object objectNode,
+      Column column)
   {
   }
 
-  private String getLeftStateIconName(JMDiffNode diffNode)
+  private Icon getLeftStateIconName(JMDiffNode diffNode)
   {
     if (diffNode != null)
     {
       if (diffNode.isCompareEqual(JMDiffNode.Compare.NotEqual))
       {
-        return "stock_changed2";
+        return Icons.FILE_EXIST_NOTEQUAL.getSmallerIcon();
+      }
+
+      if (diffNode.isCompareEqual(JMDiffNode.Compare.Equal))
+      {
+        return Icons.FILE_EXIST_EQUAL.getSmallerIcon();
       }
 
       if (diffNode.isCompareEqual(JMDiffNode.Compare.LeftMissing)
-        || diffNode.isCompareEqual(JMDiffNode.Compare.BothMissing))
+          || diffNode.isCompareEqual(JMDiffNode.Compare.BothMissing))
       {
-        return "stock_deleted3";
+        return Icons.FILE_NOT_EXIST.getSmallerIcon();
+      }
+
+      if (diffNode.isCompareEqual(JMDiffNode.Compare.RightMissing))
+      {
+        return Icons.FILE_EXIST_NOTEQUAL.getSmallerIcon();
       }
     }
 
-    return "stock_equal";
+    return Icons.FILE_EXIST_EQUAL.getSmallerIcon();
   }
 
-  private String getRightStateIconName(JMDiffNode diffNode)
+  private Icon getRightStateIconName(JMDiffNode diffNode)
   {
     if (diffNode != null)
     {
       if (diffNode.isCompareEqual(JMDiffNode.Compare.NotEqual))
       {
-        return "stock_changed2";
+        return Icons.FILE_EXIST_NOTEQUAL.getSmallerIcon();
+      }
+
+      if (diffNode.isCompareEqual(JMDiffNode.Compare.Equal))
+      {
+        return Icons.FILE_EXIST_EQUAL.getSmallerIcon();
       }
 
       if (diffNode.isCompareEqual(JMDiffNode.Compare.RightMissing)
-        || diffNode.isCompareEqual(JMDiffNode.Compare.BothMissing))
+          || diffNode.isCompareEqual(JMDiffNode.Compare.BothMissing))
       {
-        return "stock_deleted3";
+        return Icons.FILE_NOT_EXIST.getSmallerIcon();
+      }
+
+      if (diffNode.isCompareEqual(JMDiffNode.Compare.LeftMissing))
+      {
+        return Icons.FILE_EXIST_NOTEQUAL.getSmallerIcon();
       }
     }
 
-    return "stock_equal";
+    return Icons.FILE_EXIST_EQUAL.getSmallerIcon();
   }
 }

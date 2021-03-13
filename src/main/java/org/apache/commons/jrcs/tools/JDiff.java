@@ -52,31 +52,38 @@
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
- *
+ * test
  */
 package org.apache.commons.jrcs.tools;
-
-import org.apache.commons.jrcs.diff.Diff;
-import org.apache.commons.jrcs.diff.Revision;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.commons.jrcs.diff.Diff;
+import org.apache.commons.jrcs.diff.Revision;
 
 /**
  * A program to compare two files.
- * <p>JDiff produces the deltas between the two given files in Unix diff
- * format.
+ * <p>
+ * JDiff produces the deltas between the two given files in Unix diff format.
  * </p>
- * <p>The program was written as a simple test of the
- * {@linkplain org.apache.commons.jrcs.diff diff} package.
+ * <p>
+ * The program was written as a simple test of the {@linkplain org.apache.commons.jrcs.diff diff} package.
  */
 public class JDiff
 {
   static final String[] loadFile(String name)
+      throws IOException
+  {
+    return Files.lines(Paths.get(name)).toArray(String[]::new);
+  }
+
+  static final String[] loadFile2(String name)
       throws IOException
   {
     BufferedReader data = new BufferedReader(new FileReader(name));
@@ -120,10 +127,10 @@ public class JDiff
         Object[] reco = r.patch(orig);
 
         //String recos = Diff.arrayToString(reco);
-        if (!Diff.compare(rev, reco))
+        if (!Diff.compare(rev,
+                          reco))
         {
-          System.err
-              .println("INTERNAL ERROR:" + "files differ after patching!");
+          System.err.println("INTERNAL ERROR:" + "files differ after patching!");
         }
       }
       catch (Throwable o)

@@ -3,7 +3,7 @@ package org.jmeld.ui.action;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.jmeld.util.*;
+import org.jmeld.util.Option;
 
 public class Actions
 {
@@ -50,7 +50,7 @@ public class Actions
   public class Action
   {
     // Instance variables:
-    public Option  option = new Option(true);
+    public Option option = new Option(true);
     private String name;
 
     private Action(String name)

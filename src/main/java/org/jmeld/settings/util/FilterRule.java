@@ -16,14 +16,8 @@
  */
 package org.jmeld.settings.util;
 
-import org.jmeld.ui.util.*;
-import org.jmeld.util.conf.*;
+import org.jmeld.util.conf.AbstractConfigurationElement;
 
-import javax.xml.bind.annotation.*;
-
-import java.awt.*;
-
-@XmlAccessorType(XmlAccessType.NONE)
 public class FilterRule
     extends AbstractConfigurationElement
 {
@@ -41,21 +35,20 @@ public class FilterRule
       this.text = text;
     }
 
+    @Override
     public String toString()
     {
       return text;
     }
   }
-  @XmlAttribute
   private boolean active;
-  @XmlAttribute
   private String pattern;
-  @XmlAttribute
   private Rule rule;
-  @XmlAttribute
   private String description;
 
-  public FilterRule(String description, Rule rule, String pattern,
+  public FilterRule(String description,
+      Rule rule,
+      String pattern,
       boolean active)
   {
     setDescription(description);

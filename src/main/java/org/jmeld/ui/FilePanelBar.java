@@ -16,9 +16,13 @@
  */
 package org.jmeld.ui;
 
-import org.jmeld.ui.util.*;
-
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import org.jmeld.ui.util.Icons;
+import org.jmeld.ui.util.ImageUtil;
+import org.jmeld.ui.util.ToolBarBuilder;
 
 public class FilePanelBar
     extends JPanel
@@ -27,8 +31,8 @@ public class FilePanelBar
   private JLabel selected;
   private JLabel lineNumber;
   private JLabel columnNumber;
-  private ImageIcon iconSelected;
-  private ImageIcon iconNotSelected;
+  private Icon iconSelected;
+  private Icon iconNotSelected;
 
   public FilePanelBar(FilePanel filePanel)
   {
@@ -52,7 +56,7 @@ public class FilePanelBar
     builder.addSeparator();
     builder.addComponent(columnNumber);
 
-    iconSelected = ImageUtil.getImageIcon("panel-selected");
+    iconSelected = Icons.PANEL_SELECTED.getSmallerIcon();
     iconNotSelected = ImageUtil.createTransparentIcon(iconSelected);
 
     update();
@@ -93,10 +97,13 @@ public class FilePanelBar
       column = -1;
     }
 
-    text = String.format("Line: %05d/%05d", line + 1, editor.getLineCount());
+    text = String.format("Line: %05d/%05d",
+                         line + 1,
+                         editor.getLineCount());
     lineNumber.setText(text);
 
-    text = String.format("Column: %03d", column);
+    text = String.format("Column: %03d",
+                         column);
     columnNumber.setText(text);
   }
 }

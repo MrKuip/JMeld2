@@ -1,9 +1,8 @@
 package org.jmeld.vc.svn;
 
-import org.jmeld.util.*;
-import org.jmeld.vc.*;
-
-import java.io.*;
+import java.io.File;
+import org.jmeld.util.Result;
+import org.jmeld.vc.BlameIF;
 
 public class BlameCmd
     extends SvnXmlCmd<BlameData>
@@ -19,7 +18,11 @@ public class BlameCmd
 
   public Result execute()
   {
-    super.execute("svn", "blame", "--non-interactive", "--xml", file.getPath());
+    super.execute("svn",
+                  "blame",
+                  "--non-interactive",
+                  "--xml",
+                  file.getPath());
 
     return getResult();
   }
@@ -40,9 +43,8 @@ public class BlameCmd
       {
         for (BlameIF.EntryIF entry : target.getEntryList())
         {
-          System.out.println(entry.getLineNumber() + " : "
-                             + entry.getCommit().getRevision() + " -> "
-                             + entry.getCommit().getAuthor());
+          System.out.println(entry.getLineNumber() + " : " + entry.getCommit().getRevision() + " -> "
+              + entry.getCommit().getAuthor() + " " + entry.getCommit().getDate());
         }
       }
     }

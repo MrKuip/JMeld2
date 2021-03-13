@@ -16,25 +16,49 @@
  */
 package org.jmeld.ui;
 
-import org.jmeld.diff.*;
-import org.jmeld.settings.JMeldSettings;
-import org.jmeld.ui.search.*;
-import org.jmeld.ui.swing.*;
-import org.jmeld.ui.text.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.*;
-import org.jmeld.util.conf.*;
-import org.jmeld.util.prefs.*;
-
-import javax.swing.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import javax.swing.border.Border;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Highlighter;
+import org.jmeld.diff.JMChunk;
+import org.jmeld.diff.JMDelta;
+import org.jmeld.diff.JMRevision;
+import org.jmeld.settings.JMeldSettings;
+import org.jmeld.ui.search.SearchCommand;
+import org.jmeld.ui.search.SearchHit;
+import org.jmeld.ui.search.SearchHits;
+import org.jmeld.ui.swing.DiffLabel;
+import org.jmeld.ui.swing.JMHighlightPainter;
+import org.jmeld.ui.swing.JMHighlighter;
+import org.jmeld.ui.swing.LeftScrollPaneLayout;
+import org.jmeld.ui.swing.LineNumberBorder;
+import org.jmeld.ui.text.BufferDocumentChangeListenerIF;
+import org.jmeld.ui.text.BufferDocumentIF;
+import org.jmeld.ui.text.JMDocumentEvent;
+import org.jmeld.ui.util.FontUtil;
+import org.jmeld.ui.util.Icons;
+import org.jmeld.ui.util.ImageUtil;
+import org.jmeld.util.StringUtil;
+import org.jmeld.util.conf.ConfigurationListenerIF;
 
 public class FilePanel
     implements BufferDocumentChangeListenerIF, ConfigurationListenerIF
@@ -57,7 +81,9 @@ public class FilePanel
   private boolean selected;
   private FilePanelBar filePanelBar;
 
-  FilePanel(BufferDiffPanel diffPanel, String name, int position)
+  FilePanel(BufferDiffPanel diffPanel,
+      String name,
+      int position)
   {
     this.diffPanel = diffPanel;
     this.name = name;
@@ -68,7 +94,7 @@ public class FilePanel
 
   private void init()
   {
-    ImageIcon icon;
+    Icon icon;
 
     editor = new JTextArea();
     editor.setDragEnabled(true);
@@ -89,8 +115,8 @@ public class FilePanel
 
       // Normally the leftside is not painted of a scrollbar that is
       //   NOT freestanding.
-      scrollPane.getVerticalScrollBar().putClientProperty(
-        "JScrollBar.isFreeStanding", Boolean.TRUE);
+      scrollPane.getVerticalScrollBar().putClientProperty("JScrollBar.isFreeStanding",
+                                                          Boolean.TRUE);
     }
 
     fileBox = new JComboBox();
@@ -99,14 +125,18 @@ public class FilePanel
     fileLabel = new DiffLabel();
 
     saveButton = new JButton();
-    saveButton.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+    saveButton.setBorder(BorderFactory.createEmptyBorder(2,
+                                                         2,
+                                                         2,
+                                                         2));
     saveButton.setContentAreaFilled(false);
-    icon = ImageUtil.getSmallImageIcon("stock_save");
+    icon = Icons.SAVE.getSmallIcon();
     saveButton.setIcon(icon);
     saveButton.setDisabledIcon(ImageUtil.createTransparentIcon(icon));
     saveButton.addActionListener(getSaveButtonAction());
 
-    timer = new Timer(100, refresh());
+    timer = new Timer(100,
+                      refresh());
     timer.setRepeats(false);
 
     initConfiguration();
@@ -168,8 +198,7 @@ public class FilePanel
         previousDocument = bufferDocument.getDocument();
         if (previousDocument != null)
         {
-          previousDocument.removeUndoableEditListener(diffPanel
-              .getUndoHandler());
+          previousDocument.removeUndoableEditListener(diffPanel.getUndoHandler());
         }
       }
 
@@ -197,17 +226,19 @@ public class FilePanel
     {
       ex.printStackTrace();
 
-      JOptionPane.showMessageDialog(diffPanel, "Could not read file: "
-                                               + bufferDocument.getName()
-                                               + "\n" + ex.getMessage(),
-        "Error opening file", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(diffPanel,
+                                    "Could not read file: " + bufferDocument.getName() + "\n" + ex.getMessage(),
+                                    "Error opening file",
+                                    JOptionPane.ERROR_MESSAGE);
       return;
     }
   }
 
-  void updateFileLabel(String name1, String name2)
+  void updateFileLabel(String name1,
+      String name2)
   {
-    fileLabel.setText(name1, name2);
+    fileLabel.setText(name1,
+                      name2);
   }
 
   void doStopSearch()
@@ -256,7 +287,8 @@ public class FilePanel
         if (!regularExpression)
         {
           fromIndex = 0;
-          while ((index = text.indexOf(searchText, fromIndex)) != -1)
+          while ((index = text.indexOf(searchText,
+                                       fromIndex)) != -1)
           {
             offset = bufferDocument.getOffsetForLine(line);
             if (offset < 0)
@@ -264,7 +296,9 @@ public class FilePanel
               continue;
             }
 
-            searchHit = new SearchHit(line, offset + index, searchText.length());
+            searchHit = new SearchHit(line,
+                                      offset + index,
+                                      searchText.length());
             searchHits.add(searchHit);
 
             fromIndex = index + searchHit.getSize() + 1;
@@ -292,7 +326,8 @@ public class FilePanel
       {
         originalBorder = editor.getBorder();
         editor.setBorder(new LineNumberBorder(this));
-        editor.putClientProperty(propertyName, originalBorder);
+        editor.putClientProperty(propertyName,
+                                 originalBorder);
       }
     }
     else
@@ -300,7 +335,8 @@ public class FilePanel
       if (originalBorder != null)
       {
         editor.setBorder(originalBorder);
-        editor.putClientProperty(propertyName, null);
+        editor.putClientProperty(propertyName,
+                                 null);
       }
     }
   }
@@ -328,10 +364,10 @@ public class FilePanel
     {
       for (SearchHit sh : searchHits.getSearchHits())
       {
-        setHighlight(JMHighlighter.LAYER2, sh.getFromOffset(),
-          sh.getToOffset(),
-          searchHits.isCurrent(sh) ? JMHighlightPainter.CURRENT_SEARCH
-                                  : JMHighlightPainter.SEARCH);
+        setHighlight(JMHighlighter.LAYER2,
+                     sh.getFromOffset(),
+                     sh.getToOffset(),
+                     searchHits.isCurrent(sh) ? JMHighlightPainter.CURRENT_SEARCH : JMHighlightPainter.SEARCH);
       }
     }
   }
@@ -373,8 +409,7 @@ public class FilePanel
           continue;
         }
 
-        toOffset = bufferDocument.getOffsetForLine(original.getAnchor()
-                                                   + original.getSize());
+        toOffset = bufferDocument.getOffsetForLine(original.getAnchor() + original.getSize());
         if (toOffset < 0)
         {
           continue;
@@ -382,19 +417,26 @@ public class FilePanel
 
         if (delta.isAdd())
         {
-          setHighlight(fromOffset, fromOffset + 1,
-            JMHighlightPainter.ADDED_LINE);
+          setHighlight(fromOffset,
+                       fromOffset + 1,
+                       JMHighlightPainter.ADDED_LINE);
         }
         else if (delta.isDelete())
         {
-          setHighlight(fromOffset, toOffset, JMHighlightPainter.DELETED);
+          setHighlight(fromOffset,
+                       toOffset,
+                       JMHighlightPainter.DELETED);
         }
         else if (delta.isChange())
         {
           // Mark the changes in a change in a different color.
-          if (original.getSize() < MAXSIZE_CHANGE_DIFF
-              && revised.getSize() < MAXSIZE_CHANGE_DIFF)
+          if (original.getSize() < MAXSIZE_CHANGE_DIFF && revised.getSize() < MAXSIZE_CHANGE_DIFF)
           {
+            if (!delta.isReallyChanged())
+            {
+              continue;
+            }
+
             changeRev = delta.getChangeRevision();
             if (changeRev != null)
             {
@@ -409,15 +451,19 @@ public class FilePanel
                 fromOffset2 = fromOffset + changeOriginal.getAnchor();
                 toOffset2 = fromOffset2 + changeOriginal.getSize();
 
-                setHighlight(JMHighlighter.LAYER1, fromOffset2, toOffset2,
-                  JMHighlightPainter.CHANGED_LIGHTER);
+                setHighlight(JMHighlighter.LAYER1,
+                             fromOffset2,
+                             toOffset2,
+                             JMHighlightPainter.CHANGED_LIGHTER);
               }
             }
           }
 
           // First color the changes in changes and after that the entire change
           //   (It seems that you can only color a range once!)
-          setHighlight(fromOffset, toOffset, JMHighlightPainter.CHANGED);
+          setHighlight(fromOffset,
+                       toOffset,
+                       JMHighlightPainter.CHANGED);
         }
       }
       else if (BufferDocumentIF.REVISED.equals(name))
@@ -428,8 +474,7 @@ public class FilePanel
           continue;
         }
 
-        toOffset = bufferDocument.getOffsetForLine(revised.getAnchor()
-                                                   + revised.getSize());
+        toOffset = bufferDocument.getOffsetForLine(revised.getAnchor() + revised.getSize());
         if (toOffset < 0)
         {
           continue;
@@ -437,18 +482,25 @@ public class FilePanel
 
         if (delta.isAdd())
         {
-          setHighlight(fromOffset, toOffset, JMHighlightPainter.ADDED);
+          setHighlight(fromOffset,
+                       toOffset,
+                       JMHighlightPainter.ADDED);
         }
         else if (delta.isDelete())
         {
-          setHighlight(fromOffset, fromOffset + 1,
-            JMHighlightPainter.DELETED_LINE);
+          setHighlight(fromOffset,
+                       fromOffset + 1,
+                       JMHighlightPainter.DELETED_LINE);
         }
         else if (delta.isChange())
         {
-          if (original.getSize() < MAXSIZE_CHANGE_DIFF
-              && revised.getSize() < MAXSIZE_CHANGE_DIFF)
+          if (original.getSize() < MAXSIZE_CHANGE_DIFF && revised.getSize() < MAXSIZE_CHANGE_DIFF)
           {
+            if (!delta.isReallyChanged())
+            {
+              continue;
+            }
+
             changeRev = delta.getChangeRevision();
             if (changeRev != null)
             {
@@ -463,13 +515,17 @@ public class FilePanel
                 fromOffset2 = fromOffset + changeRevised.getAnchor();
                 toOffset2 = fromOffset2 + changeRevised.getSize();
 
-                setHighlight(JMHighlighter.LAYER1, fromOffset2, toOffset2,
-                  JMHighlightPainter.CHANGED_LIGHTER);
+                setHighlight(JMHighlighter.LAYER1,
+                             fromOffset2,
+                             toOffset2,
+                             JMHighlightPainter.CHANGED_LIGHTER);
               }
             }
           }
 
-          setHighlight(fromOffset, toOffset, JMHighlightPainter.CHANGED);
+          setHighlight(fromOffset,
+                       toOffset,
+                       JMHighlightPainter.CHANGED);
         }
       }
     }
@@ -490,18 +546,27 @@ public class FilePanel
     jmhl.removeHighlights(JMHighlighter.LAYER2);
   }
 
-  private void setHighlight(int offset, int size,
+  private void setHighlight(int offset,
+      int size,
       Highlighter.HighlightPainter highlight)
   {
-    setHighlight(JMHighlighter.LAYER0, offset, size, highlight);
+    setHighlight(JMHighlighter.LAYER0,
+                 offset,
+                 size,
+                 highlight);
   }
 
-  private void setHighlight(Integer layer, int offset, int size,
+  private void setHighlight(Integer layer,
+      int offset,
+      int size,
       Highlighter.HighlightPainter highlight)
   {
     try
     {
-      getHighlighter().addHighlight(layer, offset, size, highlight);
+      getHighlighter().addHighlight(layer,
+                                    offset,
+                                    size,
+                                    highlight);
     }
     catch (BadLocationException ex)
     {
@@ -522,9 +587,9 @@ public class FilePanel
         catch (Exception ex)
         {
           JOptionPane.showMessageDialog(SwingUtilities.getRoot(editor),
-            "Could not save file: " + bufferDocument.getName() + "\n"
-                + ex.getMessage(), "Error saving file",
-            JOptionPane.ERROR_MESSAGE);
+                                        "Could not save file: " + bufferDocument.getName() + "\n" + ex.getMessage(),
+                                        "Error saving file",
+                                        JOptionPane.ERROR_MESSAGE);
         }
       }
     };

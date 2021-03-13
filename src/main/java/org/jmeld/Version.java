@@ -16,9 +16,8 @@
  */
 package org.jmeld;
 
-import org.jmeld.util.*;
-
-import java.util.*;
+import java.util.Properties;
+import org.jmeld.util.ResourceLoader;
 
 public class Version
 {

@@ -16,9 +16,9 @@
  */
 package org.jmeld.util.conf;
 
-import org.jmeld.util.prefs.*;
-
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import org.jmeld.util.prefs.Preference;
 
 public class ConfigurationPreference
     extends Preference
@@ -54,15 +54,16 @@ public class ConfigurationPreference
     try
     {
       defaultFileName = new File(System.getProperty("user.home"),
-          defaultFileName).getCanonicalPath();
+                                 defaultFileName).getCanonicalPath();
     }
     catch (Exception ex)
     {
       ex.printStackTrace();
     }
-    defaultFileName += ".xml";
+    defaultFileName += ".json";
 
-    fileName = getString(FILENAME, defaultFileName);
+    fileName = getString(FILENAME,
+                         defaultFileName);
 
     file = new File(fileName);
   }
@@ -82,7 +83,8 @@ public class ConfigurationPreference
   {
     try
     {
-      putString(FILENAME, file.getCanonicalPath());
+      putString(FILENAME,
+                file.getCanonicalPath());
     }
     catch (IOException ex)
     {

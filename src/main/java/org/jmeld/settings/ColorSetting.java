@@ -16,24 +16,16 @@
  */
 package org.jmeld.settings;
 
-import org.jmeld.ui.util.*;
-import org.jmeld.util.conf.*;
+import java.awt.Color;
+import org.jmeld.util.conf.AbstractConfigurationElement;
 
-import javax.xml.bind.annotation.*;
-
-import java.awt.*;
-
-@XmlAccessorType(XmlAccessType.NONE)
 public class ColorSetting
     extends AbstractConfigurationElement
 {
-  @XmlAttribute
   private int b = -1;
-  @XmlAttribute
   private int g = -1;
-  @XmlAttribute
   private int r = -1;
-  private Color color;
+  private transient Color color;
 
   public ColorSetting()
   {
@@ -57,7 +49,9 @@ public class ColorSetting
 
     if (color == null)
     {
-      color = new Color(r, g, b);
+      color = new Color(r,
+                        g,
+                        b);
     }
 
     return color;

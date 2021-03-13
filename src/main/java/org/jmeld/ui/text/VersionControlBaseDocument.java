@@ -16,17 +16,20 @@
  */
 package org.jmeld.ui.text;
 
-import org.jmeld.vc.*;
-import org.jmeld.*;
-import org.jmeld.util.node.*;
-
-import java.io.*;
-
-import org.jmeld.vc.*;
-import org.jmeld.util.*;
-
-import java.io.*;
-import java.nio.charset.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import org.jmeld.JMeldException;
+import org.jmeld.util.CharsetDetector;
+import org.jmeld.util.node.FileNode;
+import org.jmeld.vc.BaseFile;
+import org.jmeld.vc.StatusResult;
+import org.jmeld.vc.VersionControlIF;
 
 public class VersionControlBaseDocument
     extends AbstractBufferDocument
@@ -41,7 +44,9 @@ public class VersionControlBaseDocument
   private Charset charset;
 
   public VersionControlBaseDocument(VersionControlIF versionControl,
-      StatusResult.Entry entry, FileNode fileNode, File file)
+      StatusResult.Entry entry,
+      FileNode fileNode,
+      File file)
   {
     this.versionControl = versionControl;
     this.entry = entry;
@@ -86,15 +91,15 @@ public class VersionControlBaseDocument
       try
       {
         initBaseFile();
-        bais = new BufferedInputStream(new ByteArrayInputStream(baseFile
-            .getByteArray()));
+        bais = new BufferedInputStream(new ByteArrayInputStream(baseFile.getByteArray()));
         charset = CharsetDetector.getInstance().getCharset(bais);
-        return new BufferedReader(new InputStreamReader(bais, charset));
+        return new BufferedReader(new InputStreamReader(bais,
+                                                        charset));
       }
       catch (Exception ex)
       {
-        throw new JMeldException("Could not create FileReader for : "
-                                 + file.getName(), ex);
+        throw new JMeldException("Could not create FileReader for : " + file.getName(),
+                                 ex);
       }
     }
     else

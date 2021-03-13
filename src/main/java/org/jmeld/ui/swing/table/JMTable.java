@@ -16,30 +16,12 @@
  */
 package org.jmeld.ui.swing.table;
 
-import com.jgoodies.forms.layout.*;
-
-import org.jdesktop.swingx.*;
-import org.jdesktop.swingx.decorator.*;
-import org.jmeld.*;
-import org.jmeld.diff.*;
-import org.jmeld.ui.search.*;
-import org.jmeld.ui.swing.*;
-import org.jmeld.ui.text.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.*;
-import org.jmeld.util.file.*;
-import org.jmeld.util.node.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-import javax.swing.text.*;
-import javax.swing.undo.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import javax.swing.JTable;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 public class JMTable
     extends JTable
@@ -98,22 +80,26 @@ public class JMTable
     }
   }
 
-  public TableCellEditor getCellEditor(int row, int column)
+  public TableCellEditor getCellEditor(int row,
+      int column)
   {
     Class clazz;
     TableCellEditor editor;
 
-    clazz = ((JMTableModel) getModel()).getColumnClass(row, column);
+    clazz = ((JMTableModel) getModel()).getColumnClass(row,
+                                                       column);
     editor = getDefaultEditor(clazz);
     if (editor != null)
     {
       return editor;
     }
 
-    return super.getCellEditor(row, column);
+    return super.getCellEditor(row,
+                               column);
   }
 
-  public TableCellRenderer getCellRenderer(int row, int column)
+  public TableCellRenderer getCellRenderer(int row,
+      int column)
   {
     Class clazz;
     TableCellRenderer renderer;
@@ -122,7 +108,8 @@ public class JMTable
     model = getModel();
     if (model instanceof JMTableModel)
     {
-      clazz = ((JMTableModel) model).getColumnClass(row, column);
+      clazz = ((JMTableModel) model).getColumnClass(row,
+                                                    column);
       renderer = getDefaultRenderer(clazz);
       if (renderer != null)
       {
@@ -130,6 +117,7 @@ public class JMTable
       }
     }
 
-    return super.getCellRenderer(row, column);
+    return super.getCellRenderer(row,
+                                 column);
   }
 }

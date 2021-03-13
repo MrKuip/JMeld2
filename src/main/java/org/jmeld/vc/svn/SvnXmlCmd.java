@@ -1,10 +1,8 @@
 package org.jmeld.vc.svn;
 
-import org.jmeld.util.*;
-import org.jmeld.vc.util.*;
-
-import java.io.*;
-import java.util.*;
+import org.jmeld.util.Result;
+import org.jmeld.util.XmlPersister;
+import org.jmeld.vc.util.VcCmd;
 
 public class SvnXmlCmd<T>
     extends VcCmd<T>
@@ -16,22 +14,19 @@ public class SvnXmlCmd<T>
     this.clazz = clazz;
   }
 
+  @Override
   public void build(byte[] data)
   {
-    Result result;
-    InputStream is;
-    ByteArrayOutputStream baos;
-
     try
     {
-      is = new ByteArrayInputStream(data);
-      setResultData(JaxbPersister.getInstance().load(clazz, is));
-      is.close();
+      setResultData(XmlPersister.getInstance().read(clazz,
+                                                    data));
       setResult(Result.TRUE());
     }
     catch (Exception ex)
     {
-      setResult(Result.FALSE(ex.getMessage(), ex));
+      setResult(Result.FALSE(ex.getMessage(),
+                             ex));
     }
   }
 }

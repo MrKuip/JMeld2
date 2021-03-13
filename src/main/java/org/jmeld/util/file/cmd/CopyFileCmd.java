@@ -1,10 +1,11 @@
 package org.jmeld.util.file.cmd;
 
-import org.jmeld.util.file.*;
-import org.jmeld.util.node.*;
-
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import org.jmeld.util.file.FileUtil;
+import org.jmeld.util.node.FileNode;
+import org.jmeld.util.node.JMDiffNode;
 
 public class CopyFileCmd
     extends AbstractCmd
@@ -13,7 +14,8 @@ public class CopyFileCmd
   private FileNode fromFileNode;
   private FileNode toFileNode;
 
-  public CopyFileCmd(JMDiffNode diffNode, FileNode fromFileNode,
+  public CopyFileCmd(JMDiffNode diffNode,
+      FileNode fromFileNode,
       FileNode toFileNode)
       throws Exception
   {
@@ -41,7 +43,8 @@ public class CopyFileCmd
         addCommand(new MkDirCommand(parentFile));
       }
     }
-    addCommand(new CopyCommand(fromFile, toFile));
+    addCommand(new CopyCommand(fromFile,
+                               toFile));
     addFinallyCommand(new ResetCommand(toFileNode));
   }
 
@@ -84,7 +87,8 @@ public class CopyFileCmd
     private File backupFile;
     private boolean toFileExists;
 
-    CopyCommand(File fromFile, File toFile)
+    CopyCommand(File fromFile,
+        File toFile)
     {
       this.fromFile = fromFile;
       this.toFile = toFile;
@@ -97,14 +101,16 @@ public class CopyFileCmd
       {
         toFileExists = true;
 
-        backupFile = FileUtil.createTempFile("jmeld", "backup");
+        backupFile = FileUtil.createTempFile("jmeld",
+                                             "backup");
 
         if (debug)
         {
           System.out.println("copy : " + toFile + " -> " + backupFile);
         }
 
-        FileUtil.copy(toFile, backupFile);
+        FileUtil.copy(toFile,
+                      backupFile);
       }
 
       if (debug)
@@ -112,7 +118,8 @@ public class CopyFileCmd
         System.out.println("copy : " + fromFile + " -> " + toFile);
       }
 
-      FileUtil.copy(fromFile, toFile);
+      FileUtil.copy(fromFile,
+                    toFile);
     }
 
     public void undo()
@@ -128,7 +135,8 @@ public class CopyFileCmd
               System.out.println("copy : " + backupFile + " -> " + toFile);
             }
 
-            FileUtil.copy(backupFile, toFile);
+            FileUtil.copy(backupFile,
+                          toFile);
             backupFile.delete();
             backupFile = null;
           }

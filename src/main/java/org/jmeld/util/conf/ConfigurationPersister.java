@@ -1,11 +1,8 @@
 package org.jmeld.util.conf;
 
-import org.jmeld.util.*;
-
-import java.io.*;
-import java.util.*;
-
-import javax.xml.bind.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import org.jmeld.util.JsonPersister;
 
 public class ConfigurationPersister
 {
@@ -21,19 +18,21 @@ public class ConfigurationPersister
     return instance;
   }
 
-  /** Load a configuration of type 'clazz' from a file.
+  /**
+   * Read a configuration of type 'clazz' from a file.
    */
-  public <T extends AbstractConfiguration> T load(Class<T> clazz, File file)
+  public <T extends AbstractConfiguration> T read(Class<T> clazz, File file)
       throws FileNotFoundException
   {
     T configuration;
 
     try
     {
-      configuration = JaxbPersister.getInstance().load(clazz, file);
+      configuration = JsonPersister.getInstance().read(file, clazz);
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       return null;
     }
 
@@ -42,11 +41,12 @@ public class ConfigurationPersister
     return configuration;
   }
 
-  /** Save a configuration to a file.
+  /**
+   * Write a configuration to a file.
    */
-  public void save(AbstractConfiguration configuration, File file)
-      throws JAXBException, IOException
+  public void write(AbstractConfiguration configuration, File file)
+      throws Exception
   {
-    JaxbPersister.getInstance().save(configuration, file);
+    JsonPersister.getInstance().write(file, configuration);
   }
 }

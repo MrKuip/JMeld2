@@ -1,8 +1,14 @@
 package org.jmeld.util.file;
 
-import java.io.*;
-import java.util.*;
-import java.nio.channels.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileUtil
 {
@@ -21,7 +27,8 @@ public class FileUtil
     return result;
   }
 
-  public static void copy(File src, File dst)
+  public static void copy(File src,
+      File dst)
       throws IOException
   {
     FileChannel inChannel;
@@ -30,13 +37,16 @@ public class FileUtil
     inChannel = new FileInputStream(src).getChannel();
     outChannel = new FileOutputStream(dst).getChannel();
 
-    outChannel.transferFrom(inChannel, 0, inChannel.size());
+    outChannel.transferFrom(inChannel,
+                            0,
+                            inChannel.size());
 
     inChannel.close();
     outChannel.close();
   }
 
-  public static void copy2(File src, File dst)
+  public static void copy2(File src,
+      File dst)
       throws IOException
   {
     InputStream in;
@@ -51,19 +61,23 @@ public class FileUtil
     buf = new byte[1024];
     while ((len = in.read(buf)) > 0)
     {
-      out.write(buf, 0, len);
+      out.write(buf,
+                0,
+                len);
     }
 
     in.close();
     out.close();
   }
 
-  public static File createTempFile(String prefix, String suffix)
+  public static File createTempFile(String prefix,
+      String suffix)
       throws IOException
   {
     File file;
 
-    file = File.createTempFile(prefix, suffix);
+    file = File.createTempFile(prefix,
+                               suffix);
     file.deleteOnExit();
 
     return file;

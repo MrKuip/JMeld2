@@ -1,10 +1,8 @@
 package org.jmeld.vc.bzr;
 
-import org.jmeld.util.*;
-import org.jmeld.vc.*;
-import org.jmeld.vc.util.*;
-
-import java.io.*;
+import java.io.File;
+import org.jmeld.util.Result;
+import org.jmeld.vc.util.VcCmd;
 
 public class ActiveCmd
     extends VcCmd<Boolean>
@@ -19,7 +17,9 @@ public class ActiveCmd
   public Result execute()
   {
     // If a root can be found than we have a mercurial working directory!
-    super.execute("bzr", "info", file.getAbsolutePath());
+    super.execute("bzr",
+                  "info",
+                  file.getAbsolutePath());
 
     return getResult();
   }

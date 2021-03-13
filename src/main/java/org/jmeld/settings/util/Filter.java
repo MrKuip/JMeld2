@@ -16,24 +16,23 @@
  */
 package org.jmeld.settings.util;
 
-import org.jmeld.settings.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.conf.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
-import javax.xml.bind.annotation.*;
+import org.jmeld.settings.JMeldSettings;
+import org.jmeld.util.conf.AbstractConfigurationElement;
 
-import java.util.*;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
-@XmlAccessorType(XmlAccessType.NONE)
 public class Filter
     extends AbstractConfigurationElement
 {
-  @XmlAttribute
   private Boolean includeDefault;
-  @XmlAttribute
   private String name;
-  @XmlElement
-  private List<FilterRule> rules = new ArrayList<FilterRule>();
+  public final SimpleObjectProperty<ObservableList<FilterRule>> rules = new SimpleObjectProperty<>(FXCollections.observableArrayList());
 
   public Filter(String name)
   {
@@ -49,7 +48,7 @@ public class Filter
   {
     super.init(root);
 
-    for (FilterRule rule : rules)
+    for (FilterRule rule : getRules())
     {
       rule.init(root);
     }
@@ -71,20 +70,22 @@ public class Filter
     return name;
   }
 
-  public void insertRule(FilterRule ruleToInsertAfter, FilterRule rule)
+  public void insertRule(FilterRule ruleToInsertAfter,
+      FilterRule rule)
   {
     int index;
 
     rule.init(configuration);
 
-    index = rules.indexOf(ruleToInsertAfter);
+    index = getRules().indexOf(ruleToInsertAfter);
     if (index != -1)
     {
-      rules.add(index + 1, rule);
+      getRules().add(index + 1,
+                rule);
     }
     else
     {
-      rules.add(rule);
+      getRules().add(rule);
     }
 
     fireChanged();
@@ -93,19 +94,19 @@ public class Filter
   public void addRule(FilterRule rule)
   {
     rule.init(configuration);
-    rules.add(rule);
+    getRules().add(rule);
     fireChanged();
   }
 
   public void removeRule(FilterRule rule)
   {
-    rules.remove(rule);
+    getRules().remove(rule);
     fireChanged();
   }
 
   public List<FilterRule> getRules()
   {
-    return rules;
+    return rules.get();
   }
 
   public List<String> getExcludes()
@@ -134,14 +135,14 @@ public class Filter
     return result;
   }
 
+  @Override
   public String toString()
   {
     return name;
   }
 
-  /** Recursively get all rules.
-   *  Recursively because the rule 'importFilter' will
-   *    import all rules from that filter!
+  /**
+   * Recursively get all rules. Recursively because the rule 'importFilter' will import all rules from that filter!
    */
   class GetRules
   {
@@ -151,7 +152,7 @@ public class Filter
     List<FilterRule> getRules()
     {
       collectRules(Filter.this);
-      return new ArrayList(result);
+      return new ArrayList<>(result);
     }
 
     void collectRules(Filter filter)
@@ -171,8 +172,7 @@ public class Filter
         // Rule 'importFilter' will add it's own rules to the result.
         if (rule.getRule() == FilterRule.Rule.importFilter)
         {
-          nextFilter = JMeldSettings.getInstance().getFilter().getFilter(
-            rule.getPattern());
+          nextFilter = JMeldSettings.getInstance().getFilter().getFilter(rule.getPattern());
 
           // Don't evaluate a filter twice! (otherwise there will be a never
           //   ending recursive loop)

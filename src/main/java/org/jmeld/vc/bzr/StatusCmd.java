@@ -1,11 +1,13 @@
 package org.jmeld.vc.bzr;
 
-import org.jmeld.vc.*;
-import org.jmeld.vc.util.*;
-
-import org.jmeld.util.*;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import org.jmeld.util.Result;
+import org.jmeld.vc.StatusResult;
+import org.jmeld.vc.util.VcCmd;
 
 public class StatusCmd
     extends VcCmd<StatusResult>
@@ -29,10 +31,15 @@ public class StatusCmd
   public Result execute()
   {
     phase = Phase.state;
-    super.execute("bzr", "status", "-S", file.getAbsolutePath());
+    super.execute("bzr",
+                  "status",
+                  "-S",
+                  file.getAbsolutePath());
 
     phase = Phase.inventory;
-    super.execute("bzr", "inventory", file.getAbsolutePath());
+    super.execute("bzr",
+                  "inventory",
+                  file.getAbsolutePath());
 
     return getResult();
   }
@@ -53,8 +60,7 @@ public class StatusCmd
       statusResult = getResultData();
     }
 
-    reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(
-        data)));
+    reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(data)));
     try
     {
       while ((text = reader.readLine()) != null)
@@ -100,12 +106,14 @@ public class StatusCmd
               break;
           }
 
-          statusResult.addEntry(text.substring(4), status);
+          statusResult.addEntry(text.substring(4),
+                                status);
         }
         else if (phase == Phase.inventory)
         {
           status = StatusResult.Status.clean;
-          statusResult.addEntry(text, status);
+          statusResult.addEntry(text,
+                                status);
         }
       }
     }
@@ -127,8 +135,7 @@ public class StatusCmd
     {
       for (StatusResult.Entry entry : result.getEntryList())
       {
-        System.out.println(entry.getStatus().getShortText() + " "
-                           + entry.getName());
+        System.out.println(entry.getStatus().getShortText() + " " + entry.getName());
       }
     }
   }

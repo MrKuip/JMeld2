@@ -16,11 +16,11 @@
  */
 package org.jmeld.ui;
 
-import org.jmeld.ui.swing.table.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.node.*;
-
-import javax.swing.*;
+import javax.swing.Icon;
+import org.jmeld.ui.swing.table.JMTreeTableModel;
+import org.jmeld.ui.util.ImageUtil;
+import org.jmeld.util.node.JMDiffNode;
+import org.jmeld.util.node.VersionControlBaseNode;
 
 public class VersionControlTreeTableModel
     extends JMTreeTableModel
@@ -30,11 +30,22 @@ public class VersionControlTreeTableModel
 
   public VersionControlTreeTableModel()
   {
-    fileNameColumn = addColumn("fileName", null, "File", null, -1, false);
-    statusColumn = addColumn("status", "Left", "Status", Icon.class, 12, false);
+    fileNameColumn = addColumn("fileName",
+                               null,
+                               "File",
+                               null,
+                               -1,
+                               false);
+    statusColumn = addColumn("status",
+                             "Left",
+                             "Status",
+                             Icon.class,
+                             12,
+                             false);
   }
 
-  public Object getValueAt(Object objectNode, Column column)
+  public Object getValueAt(Object objectNode,
+      Column column)
   {
     UINode uiNode;
     JMDiffNode diffNode;
@@ -50,20 +61,27 @@ public class VersionControlTreeTableModel
 
     if (column == statusColumn)
     {
-      vcbNode = (VersionControlBaseNode) diffNode.getBufferNodeLeft();
-      if(vcbNode == null)
+      if (!(diffNode.getBufferNodeLeft() instanceof VersionControlBaseNode))
       {
         return "";
       }
 
-      System.out.println( vcbNode.getEntry().getStatus().getIconName());
-      return ImageUtil.getImageIcon("16x16/" + vcbNode.getEntry().getStatus().getIconName());
+      vcbNode = (VersionControlBaseNode) diffNode.getBufferNodeLeft();
+      if (vcbNode == null)
+      {
+        return "";
+      }
+
+      System.out.println(vcbNode.getEntry().getStatus().getIconName());
+      return ImageUtil.getIcon("16x16/" + vcbNode.getEntry().getStatus().getIconName());
     }
 
     return null;
   }
 
-  public void setValueAt(Object value, Object objectNode, Column column)
+  public void setValueAt(Object value,
+      Object objectNode,
+      Column column)
   {
   }
 }

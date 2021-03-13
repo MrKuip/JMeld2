@@ -16,23 +16,26 @@
  */
 package org.jmeld.ui.util;
 
-import org.jmeld.settings.*;
-import org.jmeld.ui.action.*;
-
-import javax.swing.*;
-
-import java.awt.*;
+import java.awt.Dimension;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
+import org.jmeld.settings.EditorSettings;
+import org.jmeld.settings.JMeldSettings;
+import org.jmeld.ui.action.MeldAction;
 
 public class WidgetFactory
 {
   public static JMenuItem getMenuItem(Action action)
   {
     JMenuItem item;
-    ImageIcon icon;
+    Icon icon;
 
     item = new JMenuItem(action);
 
-    icon = (ImageIcon) action.getValue(MeldAction.SMALL_ICON);
+    icon = (Icon) action.getValue(MeldAction.SMALL_ICON);
     if (icon != null)
     {
       item.setDisabledIcon(ImageUtil.createTransparentIcon(icon));
@@ -44,7 +47,7 @@ public class WidgetFactory
   public static JButton getToolBarButton(Action action)
   {
     JButton button;
-    ImageIcon icon;
+    Icon icon;
     Dimension size;
     EditorSettings settings;
     EditorSettings.ToolbarButtonIcon toolbarButtonIcon;
@@ -61,11 +64,11 @@ public class WidgetFactory
     icon = null;
     if (toolbarButtonIcon == EditorSettings.ToolbarButtonIcon.SMALL)
     {
-      icon = (ImageIcon) action.getValue(MeldAction.SMALL_ICON);
+      icon = (Icon) action.getValue(MeldAction.SMALL_ICON);
     }
     else if (toolbarButtonIcon == EditorSettings.ToolbarButtonIcon.LARGE)
     {
-      icon = (ImageIcon) action.getValue(MeldAction.LARGE_ICON_KEY);
+      icon = (Icon) action.getValue(MeldAction.LARGE_ICON_KEY);
     }
 
     button.setIcon(icon);

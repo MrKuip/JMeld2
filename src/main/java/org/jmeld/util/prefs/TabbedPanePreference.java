@@ -16,13 +16,10 @@
  */
 package org.jmeld.util.prefs;
 
-import org.jmeld.util.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-
-import java.io.*;
-import java.util.*;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import org.jmeld.util.StringUtil;
 
 public class TabbedPanePreference
     extends Preference
@@ -33,7 +30,8 @@ public class TabbedPanePreference
   // Instance variables:
   private JTabbedPane target;
 
-  public TabbedPanePreference(String preferenceName, JTabbedPane target)
+  public TabbedPanePreference(String preferenceName,
+      JTabbedPane target)
   {
     super("TabbedPane-" + preferenceName);
 
@@ -46,7 +44,8 @@ public class TabbedPanePreference
   {
     String title;
 
-    title = getString(TITLE, "");
+    title = getString(TITLE,
+                      "");
 
     if (!StringUtil.isEmpty(title))
     {
@@ -70,7 +69,8 @@ public class TabbedPanePreference
 
     index = target.getSelectedIndex();
     title = index == -1 ? null : target.getTitleAt(index);
-    putString(TITLE, title);
+    putString(TITLE,
+              title);
   }
 
   private ChangeListener getChangeListener()

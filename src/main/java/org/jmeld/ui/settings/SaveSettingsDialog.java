@@ -16,16 +16,13 @@
  */
 package org.jmeld.ui.settings;
 
-import org.jmeld.*;
-import org.jmeld.ui.*;
-import org.jmeld.util.*;
-import org.jmeld.settings.*;
-
-import javax.swing.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import org.jmeld.settings.JMeldSettings;
+import org.jmeld.ui.JMeldPanel;
+import org.jmeld.ui.SaveSettingsPanel;
+import org.jmeld.util.ObjectUtil;
 
 public class SaveSettingsDialog
 {
@@ -43,16 +40,19 @@ public class SaveSettingsDialog
     JOptionPane pane;
     JDialog dialog;
 
-    pane = new JOptionPane(getSaveSettings(), JOptionPane.WARNING_MESSAGE);
+    pane = new JOptionPane(getSaveSettings(),
+                           JOptionPane.WARNING_MESSAGE);
     pane.setOptionType(JOptionPane.YES_NO_OPTION);
 
-    dialog = pane.createDialog(meldPanel, "Save settings");
+    dialog = pane.createDialog(meldPanel,
+                               "Save settings");
     dialog.setResizable(true);
     try
     {
       dialog.show();
 
-      if (ObjectUtil.equals(pane.getValue(), JOptionPane.YES_OPTION))
+      if (ObjectUtil.equals(pane.getValue(),
+                            JOptionPane.YES_OPTION))
       {
         ok = true;
       }

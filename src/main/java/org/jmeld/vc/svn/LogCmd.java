@@ -1,8 +1,7 @@
 package org.jmeld.vc.svn;
 
-import org.jmeld.util.*;
-
-import java.io.*;
+import java.io.File;
+import org.jmeld.util.Result;
 
 public class LogCmd
     extends SvnXmlCmd<LogData>
@@ -18,8 +17,12 @@ public class LogCmd
 
   public Result execute()
   {
-    super.execute("svn", "log", "--non-interactive", "-v", "--xml", file
-        .getPath());
+    super.execute("svn",
+                  "log",
+                  "--non-interactive",
+                  "-v",
+                  "--xml",
+                  file.getPath());
 
     return getResult();
   }
@@ -41,7 +44,7 @@ public class LogCmd
         System.out.println(entry.getRevision() + " : " + entry.getDate());
         for (LogData.Path path : entry.getPathList())
         {
-          System.out.println("  " + path.getPathName());
+          System.out.println(path.getAction() + "  " + path.getPathName());
         }
       }
     }

@@ -16,12 +16,13 @@
  */
 package org.jmeld.diff;
 
-import org.jmeld.*;
+import org.jmeld.JMeldException;
 
 public interface JMDiffAlgorithmIF
 {
   public void checkMaxTime(boolean checkMaxTime);
 
-  public JMRevision diff(Object[] orig, Object[] rev)
+  public JMRevision diff(Object[] orig,
+      Object[] rev)
       throws JMeldException, MaxTimeExceededException;
 }

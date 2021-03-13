@@ -16,12 +16,9 @@
  */
 package org.jmeld.settings;
 
-import org.jmeld.util.conf.*;
+import org.jmeld.util.conf.AbstractConfiguration;
+import org.jmeld.util.conf.ConfigurationManager;
 
-import javax.xml.bind.annotation.*;
-
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "jmeld")
 public class JMeldSettings
     extends AbstractConfiguration
 {
@@ -29,11 +26,8 @@ public class JMeldSettings
   public static JMeldSettings instance;
 
   // Instance variables:
-  @XmlElement(name = "editor")
   private EditorSettings editor = new EditorSettings();
-  @XmlElement(name = "filter")
   private FilterSettings filter = new FilterSettings();
-  @XmlElement(name = "folder")
   private FolderSettings folder = new FolderSettings();
 
   public JMeldSettings()
@@ -42,8 +36,7 @@ public class JMeldSettings
 
   public static synchronized JMeldSettings getInstance()
   {
-    return (JMeldSettings) ConfigurationManager.getInstance().get(
-      JMeldSettings.class);
+    return (JMeldSettings) ConfigurationManager.getInstance().get(JMeldSettings.class);
   }
 
   @Override

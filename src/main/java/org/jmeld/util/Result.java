@@ -1,8 +1,5 @@
 package org.jmeld.util;
 
-import java.io.*;
-import java.util.*;
-
 public class Result
 {
   // instance variables
@@ -10,7 +7,9 @@ public class Result
   private String description = "";
   private Exception exception;
 
-  private Result(boolean result, String description, Exception exception)
+  private Result(boolean result,
+      String description,
+      Exception exception)
   {
     this.result = result;
     this.description = description;
@@ -19,17 +18,24 @@ public class Result
 
   public static Result TRUE()
   {
-    return new Result(true, null, null);
+    return new Result(true,
+                      null,
+                      null);
   }
 
   public static Result FALSE(String description)
   {
-    return new Result(false, description, null);
+    return new Result(false,
+                      description,
+                      null);
   }
 
-  public static Result FALSE(String description, Exception ex)
+  public static Result FALSE(String description,
+      Exception ex)
   {
-    return new Result(false, description, ex);
+    return new Result(false,
+                      description,
+                      ex);
   }
 
   public boolean isTrue()

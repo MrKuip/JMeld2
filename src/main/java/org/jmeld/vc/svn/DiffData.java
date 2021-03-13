@@ -16,26 +16,28 @@
  */
 package org.jmeld.vc.svn;
 
-import org.jmeld.diff.*;
-import org.jmeld.vc.*;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import org.jmeld.diff.JMRevision;
+import org.jmeld.vc.DiffIF;
 
 public class DiffData
     implements DiffIF
 {
-  private List<Target> targetList;
+  private List<Target> targetList = new ArrayList<>();
 
   public DiffData()
   {
-    targetList = new ArrayList<Target>();
   }
 
-  public void addTarget(String path, JMRevision revision)
+  public void addTarget(String path,
+      JMRevision revision)
   {
-    targetList.add(new Target(path, revision));
+    targetList.add(new Target(path,
+                              revision));
   }
 
+  @Override
   public List<Target> getTargetList()
   {
     return targetList;
@@ -47,17 +49,20 @@ public class DiffData
     private String path;
     private JMRevision revision;
 
-    public Target(String path, JMRevision revision)
+    public Target(String path,
+        JMRevision revision)
     {
       this.path = path;
       this.revision = revision;
     }
 
+    @Override
     public String getPath()
     {
       return path;
     }
 
+    @Override
     public JMRevision getRevision()
     {
       return revision;

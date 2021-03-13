@@ -16,11 +16,10 @@
  */
 package org.jmeld.ui;
 
-import javax.swing.*;
-import javax.swing.event.*;
-
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class ListScrollSynchronizer
     implements ChangeListener
@@ -28,7 +27,8 @@ public class ListScrollSynchronizer
   private JViewport vp1;
   private JViewport vp2;
 
-  public ListScrollSynchronizer(JScrollPane sc1, JScrollPane sc2)
+  public ListScrollSynchronizer(JScrollPane sc1,
+      JScrollPane sc2)
   {
     vp1 = sc1.getViewport();
     vp2 = sc2.getViewport();

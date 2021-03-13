@@ -1,11 +1,12 @@
 package org.jmeld.ui.swing;
 
-import javax.swing.*;
-import javax.swing.border.*;
-
-import org.jmeld.ui.util.*;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import javax.swing.JLabel;
+import org.jmeld.ui.util.Colors;
 
 public class GradientLabel
     extends JLabel
@@ -36,11 +37,15 @@ public class GradientLabel
 
   public void setGradientColor(Color fromColor)
   {
-    setGradientColor(fromColor, new Color(fromColor.getRed(), fromColor
-        .getGreen(), fromColor.getBlue(), 0));
+    setGradientColor(fromColor,
+                     new Color(fromColor.getRed(),
+                               fromColor.getGreen(),
+                               fromColor.getBlue(),
+                               0));
   }
 
-  public void setGradientColor(Color fromColor, Color toColor)
+  public void setGradientColor(Color fromColor,
+      Color toColor)
   {
     this.fromColor = fromColor;
     this.toColor = toColor;
@@ -66,11 +71,18 @@ public class GradientLabel
 
     r = getBounds();
 
-    paint = new GradientPaint(0, 0, fromColor, (int) (r.width / 1.10),
-        r.height, toColor);
+    paint = new GradientPaint(0,
+                              0,
+                              fromColor,
+                              (int) (r.width / 1.10),
+                              r.height,
+                              toColor);
 
     g2.setPaint(paint);
-    g2.fillRect(0, 0, r.width, r.height);
+    g2.fillRect(0,
+                0,
+                r.width,
+                r.height);
 
     super.paint(g);
   }

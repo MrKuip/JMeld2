@@ -1,11 +1,12 @@
 package org.jmeld.ui.swing;
 
-import javax.swing.*;
-import javax.swing.table.*;
-
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Component;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
+import javax.swing.LookAndFeel;
+import javax.swing.table.TableCellRenderer;
 
 public class MultiLineHeaderRenderer
     extends JLabel
@@ -17,9 +18,12 @@ public class MultiLineHeaderRenderer
   {
     ListCellRenderer renderer;
 
-    LookAndFeel.installColorsAndFont(this, "TableHeader.background",
-      "TableHeader.foreground", "TableHeader.font");
-    LookAndFeel.installBorder(this, "TableHeader.cellBorder");
+    LookAndFeel.installColorsAndFont(this,
+                                     "TableHeader.background",
+                                     "TableHeader.foreground",
+                                     "TableHeader.font");
+    LookAndFeel.installBorder(this,
+                              "TableHeader.cellBorder");
 
     /*
         renderer = getCellRenderer();
@@ -33,8 +37,12 @@ public class MultiLineHeaderRenderer
     setOpaque(false);
   }
 
-  public Component getTableCellRendererComponent(JTable table, Object value,
-      boolean isSelected, boolean hasFocus, int row, int column)
+  public Component getTableCellRendererComponent(JTable table,
+      Object value,
+      boolean isSelected,
+      boolean hasFocus,
+      int row,
+      int column)
   {
     String str;
 
@@ -57,15 +65,15 @@ public class MultiLineHeaderRenderer
       Rectangle r;
       int       x;
       int       y;
-
+  
       super.paintComponent(g);
-
+  
       if (icon != null)
       {
         r = getBounds();
         x = r.width - icon.getIconWidth();
         y = ((r.height - icon.getIconHeight()) / 2);
-
+  
         icon.paintIcon(this, g, x, y);
       }
     }

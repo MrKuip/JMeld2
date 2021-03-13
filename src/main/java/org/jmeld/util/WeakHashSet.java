@@ -1,6 +1,10 @@
 package org.jmeld.util;
 
-import java.util.*;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public class WeakHashSet<E>
     extends AbstractSet<E>
@@ -20,9 +24,11 @@ public class WeakHashSet<E>
     addAll(c);
   }
 
-  public WeakHashSet(int initialCapacity, float loadFactor)
+  public WeakHashSet(int initialCapacity,
+      float loadFactor)
   {
-    map = new WeakHashMap<E, Boolean>(initialCapacity, loadFactor);
+    map = new WeakHashMap<E, Boolean>(initialCapacity,
+                                      loadFactor);
   }
 
   public WeakHashSet(int initialCapacity)
@@ -52,7 +58,8 @@ public class WeakHashSet<E>
 
   public boolean add(E o)
   {
-    return map.put(o, value) == null;
+    return map.put(o,
+                   value) == null;
   }
 
   public boolean remove(Object o)

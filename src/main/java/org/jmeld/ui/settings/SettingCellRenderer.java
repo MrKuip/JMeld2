@@ -1,14 +1,16 @@
 package org.jmeld.ui.settings;
 
-import org.jmeld.ui.util.*;
-
-import javax.swing.*;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 
 class SettingCellRenderer
     extends JLabel
-    implements ListCellRenderer
+    implements ListCellRenderer<Settings>
 {
   public SettingCellRenderer()
   {
@@ -19,20 +21,26 @@ class SettingCellRenderer
     setVerticalAlignment(JLabel.CENTER);
     setVerticalTextPosition(JLabel.BOTTOM);
     setHorizontalTextPosition(JLabel.CENTER);
-    setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    setPreferredSize(new Dimension(70, 70));
+    setBorder(BorderFactory.createEmptyBorder(10,
+                                              10,
+                                              10,
+                                              10));
+    setPreferredSize(new Dimension(70,
+                                   70));
   }
 
-  public Component getListCellRendererComponent(JList list, Object value,
-      int index, boolean isSelected, boolean cellHasFocus)
+  public Component getListCellRendererComponent(JList<? extends Settings> list,
+      Settings value,
+      int index,
+      boolean isSelected,
+      boolean cellHasFocus)
   {
     Settings settings;
-    JPanel panel;
 
     settings = (Settings) value;
 
     setText(settings.getName());
-    setIcon(ImageUtil.getImageIcon(settings.getIconName()));
+    setIcon(settings.getIcon().getLargeIcon());
 
     if (isSelected)
     {

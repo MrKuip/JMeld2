@@ -16,8 +16,6 @@
  */
 package org.jmeld.util;
 
-import java.io.*;
-
 public class StringUtil
 {
   private StringUtil()
@@ -31,6 +29,9 @@ public class StringUtil
 
   public static String replaceNewLines(String text)
   {
-    return text.replaceAll("\n", "<LF>").replaceAll("\r", "<CR>");
+    return text.replaceAll("\n",
+                           "<LF>")
+        .replaceAll("\r",
+                    "<CR>");
   }
 }

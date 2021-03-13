@@ -16,14 +16,19 @@
  */
 package org.jmeld.ui.swing;
 
-import org.jmeld.settings.*;
-import org.jmeld.ui.*;
-import org.jmeld.ui.util.*;
-
-import javax.swing.*;
-import javax.swing.border.*;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+import org.jmeld.settings.JMeldSettings;
+import org.jmeld.ui.FilePanel;
+import org.jmeld.ui.util.ColorUtil;
+import org.jmeld.ui.util.Colors;
 
 public class LineNumberBorder
     extends EmptyBorder
@@ -39,7 +44,10 @@ public class LineNumberBorder
 
   public LineNumberBorder(FilePanel filePanel)
   {
-    super(0, 40 + MARGIN, 0, 0);
+    super(0,
+          40 + MARGIN,
+          0,
+          0);
 
     this.filePanel = filePanel;
 
@@ -59,7 +67,9 @@ public class LineNumberBorder
     baseColor = Colors.getPanelBackground();
     lineColor = ColorUtil.darker(baseColor);
     background = ColorUtil.brighter(baseColor);
-    font = new Font("Monospaced", Font.PLAIN, 10);
+    font = new Font("Monospaced",
+                    Font.PLAIN,
+                    10);
 
     fm = filePanel.getEditor().getFontMetrics(font);
     fontWidth = fm.stringWidth("0");
@@ -73,10 +83,15 @@ public class LineNumberBorder
     clip = g.getClipBounds();
 
     g.setColor(background);
-    g.fillRect(0, clip.y, left - MARGIN, clip.y + clip.height);
+    g.fillRect(0,
+               clip.y,
+               left - MARGIN,
+               clip.y + clip.height);
   }
 
-  public void paintAfter(Graphics g, int startOffset, int endOffset)
+  public void paintAfter(Graphics g,
+      int startOffset,
+      int endOffset)
   {
     Rectangle clip;
     int startLine;
@@ -104,13 +119,16 @@ public class LineNumberBorder
       heightCorrection = (lineHeight - fontHeight) / 2;
 
       g.setColor(lineColor);
-      g.drawLine(left - MARGIN, clip.y, left - MARGIN, clip.y + clip.height);
+      g.drawLine(left - MARGIN,
+                 clip.y,
+                 left - MARGIN,
+                 clip.y + clip.height);
 
       if (JMeldSettings.getInstance().getEditor().isAntialiasEnabled())
         ;
       {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
       }
 
       g.setFont(font);
@@ -119,8 +137,9 @@ public class LineNumberBorder
       {
         y += lineHeight;
         s = Integer.toString(line + 1);
-        g.drawString(s, left - (fontWidth * s.length()) - 1 - MARGIN,
-          y - heightCorrection);
+        g.drawString(s,
+                     left - (fontWidth * s.length()) - 1 - MARGIN,
+                     y - heightCorrection);
       }
     }
     catch (Exception ex)

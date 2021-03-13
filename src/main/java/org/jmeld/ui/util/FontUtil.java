@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.JTextArea;
-
 import org.jmeld.util.ResourceLoader;
 
 public class FontUtil
@@ -28,15 +26,30 @@ public class FontUtil
       resourceName = "font/materialdesignicons-webfont.ttf";
       try (InputStream is = ResourceLoader.getResourceAsStream(resourceName))
       {
-        font = Font.createFont(Font.TRUETYPE_FONT, is);
-        font = font.deriveFont(Font.PLAIN, iconSize);
-        System.out.println("size=" + font.getSize());
-      } catch (IOException | FontFormatException exp)
+        font = Font.createFont(Font.TRUETYPE_FONT,
+                               is);
+        font = font.deriveFont(Font.PLAIN,
+                               iconSize);
+      }
+      catch (IOException | FontFormatException exp)
       {
         System.out.println("Cannot create font[size=" + iconSize + ", resource=" + resourceName + "]");
       }
 
-      m_fontBySizeMap.put(iconSize, font);
+      /*
+      try (InputStream is = ResourceLoader.getResourceAsStream(resourceName))
+      {
+        javafx.scene.text.Font.loadFont(is,
+                                        iconSize);
+      }
+      catch (IOException e)
+      {
+        System.out.println("Cannot create font[size=" + iconSize + ", resource=" + resourceName + "]");
+      }
+      */
+
+      m_fontBySizeMap.put(iconSize,
+                          font);
     }
 
     return font;

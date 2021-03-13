@@ -1,9 +1,11 @@
 package org.jmeld.vc.svn;
 
-import org.jmeld.vc.*;
-
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import org.jmeld.vc.BaseFile;
+import org.jmeld.vc.BlameIF;
+import org.jmeld.vc.DiffIF;
+import org.jmeld.vc.StatusResult;
+import org.jmeld.vc.VersionControlIF;
 
 public class SubversionVersionControl
     implements VersionControlIF
@@ -40,18 +42,18 @@ public class SubversionVersionControl
     /*
     StatusCmd cmd;
     StatusResult statusResult;
-
+    
     // Don't check for existence of '.svn' because an installations
     //   can change that default.
     // Don't use the info command because it will fail for unversioned
     //   files that ARE in a versioned directory.
-
+    
     cmd = new StatusCmd(file, false);
     if (!cmd.execute().isTrue())
     {
       return false;
     }
-
+    
     // Subversion has a bug until 1.5.1.
     // It will return an invalid xmldocument on a file that is not
     //   in a working copy.
@@ -60,7 +62,7 @@ public class SubversionVersionControl
     {
       return false;
     }
-
+    
     return statusResult.getEntryList().size() >= 1;
     */
   }
@@ -74,11 +76,13 @@ public class SubversionVersionControl
     return cmd.getResultData();
   }
 
-  public DiffIF executeDiff(File file, boolean recursive)
+  public DiffIF executeDiff(File file,
+      boolean recursive)
   {
     DiffCmd cmd;
 
-    cmd = new DiffCmd(file, recursive);
+    cmd = new DiffCmd(file,
+                      recursive);
     cmd.execute();
     return cmd.getResultData();
   }
@@ -87,7 +91,8 @@ public class SubversionVersionControl
   {
     StatusCmd cmd;
 
-    cmd = new StatusCmd(file, true);
+    cmd = new StatusCmd(file,
+                        true);
     cmd.execute();
     return cmd.getStatusResult();
   }

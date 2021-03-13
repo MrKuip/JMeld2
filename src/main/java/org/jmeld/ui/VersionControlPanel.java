@@ -16,26 +16,13 @@
  */
 package org.jmeld.ui;
 
-import org.jdesktop.swingworker.SwingWorker;
-import org.jdesktop.swingx.decorator.*;
-import org.jdesktop.swingx.treetable.*;
-import org.jmeld.settings.*;
-import org.jmeld.ui.action.*;
-import org.jmeld.ui.swing.table.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.conf.*;
-import org.jmeld.util.file.*;
-import org.jmeld.util.file.cmd.*;
-import org.jmeld.util.node.*;
-
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.undo.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.util.List;
+import java.awt.BorderLayout;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import org.jmeld.ui.action.ActionHandler;
+import org.jmeld.ui.swing.table.JMTreeTableModel;
+import org.jmeld.util.conf.ConfigurationListenerIF;
+import org.jmeld.util.file.FolderDiff;
 
 public class VersionControlPanel
     extends AbstractContentPanel
@@ -46,7 +33,8 @@ public class VersionControlPanel
   private ActionHandler actionHandler;
   private JPanel bufferDiffPanelHolder;
 
-  VersionControlPanel(JMeldPanel mainPanel, FolderDiff diff)
+  VersionControlPanel(JMeldPanel mainPanel,
+      FolderDiff diff)
   {
     this.mainPanel = mainPanel;
     this.diff = diff;
@@ -59,7 +47,8 @@ public class VersionControlPanel
     FolderDiffPanel folderDiffPanel;
     JSplitPane splitPane;
 
-    folderDiffPanel = new FolderDiffPanel(mainPanel, diff)
+    folderDiffPanel = new FolderDiffPanel(mainPanel,
+                                          diff)
     {
       @Override
       protected JMTreeTableModel createTreeTableModel()
@@ -70,11 +59,13 @@ public class VersionControlPanel
     bufferDiffPanelHolder = new JPanel();
     bufferDiffPanelHolder.setLayout(new BorderLayout());
 
-    splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, folderDiffPanel,
-        bufferDiffPanelHolder);
+    splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                               folderDiffPanel,
+                               bufferDiffPanelHolder);
 
     setLayout(new BorderLayout());
-    add(BorderLayout.CENTER, splitPane);
+    add(BorderLayout.CENTER,
+        splitPane);
   }
 
   public void configurationChanged()

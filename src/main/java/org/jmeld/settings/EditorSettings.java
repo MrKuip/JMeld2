@@ -16,53 +16,34 @@
  */
 package org.jmeld.settings;
 
-import org.jmeld.ui.util.*;
-import org.jmeld.util.*;
-import org.jmeld.util.conf.*;
+import java.awt.Color;
+import java.awt.Font;
+import org.jmeld.ui.util.Colors;
+import org.jmeld.util.Ignore;
+import org.jmeld.util.ObjectUtil;
+import org.jmeld.util.conf.AbstractConfiguration;
+import org.jmeld.util.conf.AbstractConfigurationElement;
 
-import javax.xml.bind.annotation.*;
-
-import java.awt.*;
-
-@XmlAccessorType(XmlAccessType.NONE)
 public class EditorSettings
     extends AbstractConfigurationElement
 {
-  @XmlElement
   private boolean showLineNumbers;
-  @XmlElement
   private int tabSize = 4;
-  @XmlElement
   private Ignore ignore = new Ignore();
-  @XmlElement
   private boolean leftsideReadonly;
-  @XmlElement
   private boolean rightsideReadonly;
-  @XmlElement
   private ColorSetting addedColor;
-  @XmlElement
   private ColorSetting changedColor;
-  @XmlElement
   private ColorSetting deletedColor;
-  @XmlElement
   private boolean customFont;
-  @XmlElement
   private FontSetting font;
-  @XmlElement
   private boolean antialias;
-  @XmlElement
   private boolean defaultFileEncodingEnabled = true;
-  @XmlElement
   private boolean detectFileEncodingEnabled;
-  @XmlElement
   private boolean specificFileEncodingEnabled;
-  @XmlElement
   private String specificFileEncodingName;
-  @XmlElement
   private String lookAndFeelName;
-  @XmlElement
   private ToolbarButtonIcon toolbarButtonIcon = ToolbarButtonIcon.LARGE;
-  @XmlElement
   private boolean toolbarButtonTextEnabled = true;
 
   public EditorSettings()
@@ -111,67 +92,37 @@ public class EditorSettings
 
   public void setIgnoreWhitespaceAtBegin(boolean ignoreWhitespaceAtBegin)
   {
-    if (ignore.ignoreWhitespaceAtBegin == ignoreWhitespaceAtBegin)
-    {
-      return;
-    }
-
-    ignore.ignoreWhitespaceAtBegin = ignoreWhitespaceAtBegin;
-    fireChanged();
+    ignore.setIgnoreWhitespaceAtBegin(ignoreWhitespaceAtBegin);
+    //fireChanged();
   }
 
   public void setIgnoreWhitespaceInBetween(boolean ignoreWhitespaceInBetween)
   {
-    if (ignore.ignoreWhitespaceInBetween == ignoreWhitespaceInBetween)
-    {
-      return;
-    }
-
-    ignore.ignoreWhitespaceInBetween = ignoreWhitespaceInBetween;
+    ignore.setIgnoreWhitespaceInBetween(ignoreWhitespaceInBetween);
     fireChanged();
   }
 
   public void setIgnoreWhitespaceAtEnd(boolean ignoreWhitespaceAtEnd)
   {
-    if (ignore.ignoreWhitespaceAtEnd == ignoreWhitespaceAtEnd)
-    {
-      return;
-    }
-
-    ignore.ignoreWhitespaceAtEnd = ignoreWhitespaceAtEnd;
+    ignore.setIgnoreWhitespaceAtEnd(ignoreWhitespaceAtEnd);
     fireChanged();
   }
 
   public void setIgnoreEOL(boolean ignoreEOL)
   {
-    if (ignore.ignoreEOL == ignoreEOL)
-    {
-      return;
-    }
-
-    ignore.ignoreEOL = ignoreEOL;
+    ignore.setIgnoreEOL(ignoreEOL);
     fireChanged();
   }
 
   public void setIgnoreBlankLines(boolean ignoreBlankLines)
   {
-    if (ignore.ignoreBlankLines == ignoreBlankLines)
-    {
-      return;
-    }
-
-    ignore.ignoreBlankLines = ignoreBlankLines;
+    ignore.setIgnoreBlankLines(ignoreBlankLines);
     fireChanged();
   }
 
   public void setIgnoreCase(boolean ignoreCase)
   {
-    if (ignore.ignoreCase == ignoreCase)
-    {
-      return;
-    }
-
-    ignore.ignoreCase = ignoreCase;
+    ignore.setIgnoreCase(ignoreCase);
     fireChanged();
   }
 
@@ -338,7 +289,6 @@ public class EditorSettings
       toolbarButtonTextEnabled = true;
     }
 
-
     fireChanged();
   }
 
@@ -440,6 +390,7 @@ public class EditorSettings
       this.text = text;
     }
 
+    @Override
     public String toString()
     {
       return text;

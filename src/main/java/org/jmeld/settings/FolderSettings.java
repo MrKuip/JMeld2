@@ -16,14 +16,8 @@
  */
 package org.jmeld.settings;
 
-import org.jmeld.ui.util.*;
-import org.jmeld.util.conf.*;
+import org.jmeld.util.conf.AbstractConfigurationElement;
 
-import javax.xml.bind.annotation.*;
-
-import java.awt.*;
-
-@XmlAccessorType(XmlAccessType.NONE)
 public class FolderSettings
     extends AbstractConfigurationElement
 {
@@ -41,6 +35,7 @@ public class FolderSettings
       this.text = text;
     }
 
+    @Override
     public String toString()
     {
       return text;
@@ -48,15 +43,10 @@ public class FolderSettings
   }
 
   // Instance variables:
-  @XmlElement
   private FolderView view = FolderView.packageView;
-  @XmlElement
   private boolean onlyLeft = true;
-  @XmlElement
   private boolean leftRightChanged = true;
-  @XmlElement
   private boolean onlyRight = false;
-  @XmlElement
   private boolean leftRightUnChanged = false;
 
   public FolderSettings()

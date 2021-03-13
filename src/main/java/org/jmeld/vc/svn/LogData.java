@@ -16,20 +16,21 @@
  */
 package org.jmeld.vc.svn;
 
-import javax.xml.bind.annotation.*;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import java.util.*;
-
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "log")
 public class LogData
 {
-  @XmlElement(name = "logentry")
-  private List<Entry> entryList;
+  @JacksonXmlElementWrapper(useWrapping = false)
+  @JacksonXmlProperty(localName = "logentry")
+  private List<Entry> entryList = new ArrayList<>();
 
   public LogData()
   {
-    entryList = new ArrayList<Entry>();
   }
 
   public List<Entry> getEntryList()
@@ -37,19 +38,15 @@ public class LogData
     return entryList;
   }
 
-  @XmlAccessorType(XmlAccessType.NONE)
-  static class Entry
+  public static class Entry
   {
-    @XmlAttribute
+    @JacksonXmlProperty(isAttribute = true)
     private Integer revision;
-    @XmlElement
     private String author;
-    @XmlElement
     private Date date;
-    @XmlElementWrapper(name = "paths")
-    @XmlElement(name = "path")
-    private List<Path> pathList;
-    @XmlElement
+    @JacksonXmlElementWrapper(localName = "paths")
+    @JacksonXmlProperty(localName = "path")
+    private List<Path> pathList = new ArrayList<>();
     private String msg;
 
     public Entry()
@@ -82,14 +79,15 @@ public class LogData
     }
   }
 
-  static class Path
+  static public class Path
   {
-    @XmlAttribute
+    @JacksonXmlProperty(isAttribute = true)
     private String action;
-    @XmlAttribute(name = "copyfrom-path")
+    @JacksonXmlProperty(localName = "copyfrom-path", isAttribute = true)
     private String copyFromPath;
-    @XmlAttribute(name = "copyfrom-rev")
+    @JacksonXmlProperty(localName = "copyfrom-rev", isAttribute = true)
     private Integer copyFromRev;
+    @JacksonXmlText
     private String pathName;
 
     public Path()
@@ -101,7 +99,6 @@ public class LogData
       return action;
     }
 
-    @XmlValue
     public String getPathName()
     {
       return pathName;

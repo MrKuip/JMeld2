@@ -16,19 +16,25 @@
  */
 package org.jmeld.ui.search;
 
-import org.jmeld.ui.*;
-import org.jmeld.ui.search.*;
-import org.jmeld.ui.swing.*;
-import org.jmeld.ui.util.*;
-import org.jmeld.util.*;
-
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import org.jmeld.ui.AbstractBarDialog;
+import org.jmeld.ui.JMeldPanel;
+import org.jmeld.ui.util.Icons;
+import org.jmeld.util.StringUtil;
 
 public class SearchBarDialog
     extends AbstractBarDialog
@@ -47,6 +53,7 @@ public class SearchBarDialog
     super(meldPanel);
   }
 
+  @Override
   protected void init()
   {
     JButton closeButton;
@@ -56,10 +63,10 @@ public class SearchBarDialog
     setLayout(new FlowLayout(FlowLayout.LEADING));
 
     // Close the search dialog:
-    closeButton = new JButton(ImageUtil.getImageIcon("jmeld_close"));
-    closeButton.setRolloverIcon(ImageUtil.getImageIcon("jmeld_close-rollover"));
-    closeButton.setPressedIcon(ImageUtil.getImageIcon("jmeld_close-pressed"));
-    closeButton.addActionListener(getCloseAction());
+    closeButton = new JButton(Icons.CLOSE.getSmallIcon());
+    closeButton.addActionListener((e) -> {
+      getMeldPanel().doStopSearch(null);
+    });
     initButton(closeButton);
     closeButton.setBorder(null);
 
@@ -69,13 +76,14 @@ public class SearchBarDialog
     searchField.addKeyListener(getSearchKeyAction());
 
     // Find previous match:
-    previousButton = new JButton("Previous", ImageUtil
-        .getImageIcon("stock_data-previous"));
+    previousButton = new JButton("Previous",
+                                 Icons.SEARCH_PREVIOUS.getSmallIcon());
     previousButton.addActionListener(getPreviousAction());
     initButton(previousButton);
 
     // Find next match:
-    nextButton = new JButton("Next", ImageUtil.getImageIcon("stock_data-next"));
+    nextButton = new JButton("Next",
+                             Icons.SEARCH_NEXT.getSmallIcon());
     nextButton.addActionListener(getNextAction());
     initButton(nextButton);
 
@@ -91,7 +99,8 @@ public class SearchBarDialog
     add(Box.createHorizontalStrut(10));
     add(searchResult);
 
-    timer = new Timer(500, executeSearch());
+    timer = new Timer(500,
+                      executeSearch());
     timer.setRepeats(false);
   }
 
@@ -99,12 +108,16 @@ public class SearchBarDialog
   {
     button.setFocusable(false);
     button.setBorderPainted(false);
-    button.setBorder(new EmptyBorder(0, 5, 0, 5));
+    button.setBorder(new EmptyBorder(0,
+                                     5,
+                                     0,
+                                     5));
   }
 
   public SearchCommand getCommand()
   {
-    return new SearchCommand(searchField.getText(), false);
+    return new SearchCommand(searchField.getText(),
+                             false);
   }
 
   public void setSearchText(String searchText)
@@ -126,6 +139,7 @@ public class SearchBarDialog
     searchField.setText(searchText);
   }
 
+  @Override
   public void _activate()
   {
     searchField.requestFocus();
@@ -137,6 +151,7 @@ public class SearchBarDialog
     }
   }
 
+  @Override
   public void _deactivate()
   {
   }
@@ -145,16 +160,19 @@ public class SearchBarDialog
   {
     return new DocumentListener()
     {
+      @Override
       public void changedUpdate(DocumentEvent e)
       {
         timer.restart();
       }
 
+      @Override
       public void insertUpdate(DocumentEvent e)
       {
         timer.restart();
       }
 
+      @Override
       public void removeUpdate(DocumentEvent e)
       {
         timer.restart();
@@ -164,53 +182,51 @@ public class SearchBarDialog
 
   private ActionListener executeSearch()
   {
-    return new ActionListener()
+    return (e) ->
     {
-      public void actionPerformed(ActionEvent ae)
+      boolean notFound;
+      Color color;
+      String searchText;
+      SearchHits searchHits;
+
+      searchText = searchField.getText();
+
+      searchHits = getMeldPanel().doSearch(null);
+      notFound = (searchHits == null || searchHits.getSearchHits().size() == 0);
+
+      if (notFound)
       {
-        boolean notFound;
-        Color color;
-        String searchText;
-        SearchHits searchHits;
-
-        searchText = searchField.getText();
-
-        searchHits = getMeldPanel().doSearch(null);
-        notFound = (searchHits == null || searchHits.getSearchHits().size() == 0);
-
-        if (notFound)
+        // I would love to set the background to red and foreground
+        //   to white but the jdk won't let me set the background if
+        //   GTK look&feel is chosen.
+        if (searchField.getForeground() != Color.red)
         {
-          // I would love to set the background to red and foreground
-          //   to white but the jdk won't let me set the background if
-          //   GTK look&feel is chosen.
-          if (searchField.getForeground() != Color.red)
-          {
-            // Remember the original colors:
-            searchField.putClientProperty(CP_FOREGROUND, searchField
-                .getForeground());
+          // Remember the original colors:
+          searchField.putClientProperty(CP_FOREGROUND,
+                                        searchField.getForeground());
 
-            // Set the new colors:
-            searchField.setForeground(Color.red);
-          }
-
-          searchResult.setIcon(ImageUtil.getImageIcon("bullet-warning"));
-          searchResult.setText("Phrase not found");
+          // Set the new colors:
+          searchField.setForeground(Color.red);
         }
-        else
-        {
-          // Set the original colors:
-          color = (Color) searchField.getClientProperty(CP_FOREGROUND);
-          if (color != null)
-          {
-            searchField.setForeground(color);
-            searchField.putClientProperty(CP_FOREGROUND, null);
-          }
 
-          if (!StringUtil.isEmpty(searchResult.getText()))
-          {
-            searchResult.setIcon(null);
-            searchResult.setText("");
-          }
+        searchResult.setIcon(Icons.ALERT.getSmallIcon());
+        searchResult.setText("Phrase not found");
+      }
+      else
+      {
+        // Set the original colors:
+        color = (Color) searchField.getClientProperty(CP_FOREGROUND);
+        if (color != null)
+        {
+          searchField.setForeground(color);
+          searchField.putClientProperty(CP_FOREGROUND,
+                                        null);
+        }
+
+        if (!StringUtil.isEmpty(searchResult.getText()))
+        {
+          searchResult.setIcon(null);
+          searchResult.setText("");
         }
       }
     };
@@ -220,6 +236,7 @@ public class SearchBarDialog
   {
     return new KeyAdapter()
     {
+      @Override
       public void keyReleased(KeyEvent e)
       {
         if (e.getKeyCode() == KeyEvent.VK_ENTER)
@@ -232,34 +249,25 @@ public class SearchBarDialog
 
   private ActionListener getCloseAction()
   {
-    return new ActionListener()
+    return (e) ->
     {
-      public void actionPerformed(ActionEvent ae)
-      {
-        getMeldPanel().doStopSearch(null);
-      }
+      getMeldPanel().doStopSearch(null);
     };
   }
 
   private ActionListener getPreviousAction()
   {
-    return new ActionListener()
+    return (e) ->
     {
-      public void actionPerformed(ActionEvent ae)
-      {
-        getMeldPanel().doPreviousSearch(null);
-      }
+      getMeldPanel().doPreviousSearch(null);
     };
   }
 
   private ActionListener getNextAction()
   {
-    return new ActionListener()
+    return (e) ->
     {
-      public void actionPerformed(ActionEvent ae)
-      {
-        getMeldPanel().doNextSearch(null);
-      }
+      getMeldPanel().doNextSearch(null);
     };
   }
 }

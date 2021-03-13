@@ -1,6 +1,6 @@
 package org.jmeld.ui.text;
 
-import javax.swing.event.*;
+import javax.swing.event.DocumentEvent;
 
 public class JMDocumentEvent
 {
@@ -14,7 +14,8 @@ public class JMDocumentEvent
     this.document = document;
   }
 
-  public JMDocumentEvent(AbstractBufferDocument document, DocumentEvent de)
+  public JMDocumentEvent(AbstractBufferDocument document,
+      DocumentEvent de)
   {
     this(document);
 

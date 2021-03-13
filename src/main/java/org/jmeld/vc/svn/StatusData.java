@@ -16,22 +16,20 @@
  */
 package org.jmeld.vc.svn;
 
-import org.jmeld.vc.*;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import javax.xml.bind.annotation.*;
-
-import java.util.*;
-
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "status")
 public class StatusData
 {
-  @XmlElement(name = "target")
-  private List<Target> targetList;
+  @JacksonXmlElementWrapper(useWrapping = false)
+  @JacksonXmlProperty(localName = "target")
+  private List<Target> targetList = new ArrayList<>();
 
   public StatusData()
   {
-    targetList = new ArrayList<Target>();
   }
 
   public List<Target> getTargetList()
@@ -41,12 +39,12 @@ public class StatusData
 
   static class Target
   {
-    @XmlAttribute
-    private String      path;
-    @XmlElement(name = "entry")
-    private List<Entry> entryList;
-    @XmlElement
-    private Against     against;
+    @JacksonXmlProperty(isAttribute = true)
+    private String path;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "entry")
+    private List<Entry> entryList = new ArrayList<>();
+    private Against against;
 
     public Target()
     {
@@ -65,11 +63,11 @@ public class StatusData
 
   static class Entry
   {
-    @XmlAttribute
-    private String      path;
-    @XmlElement(name = "wc-status")
-    private WcStatus    wcStatus;
-    @XmlElement(name = "repos-status")
+    @JacksonXmlProperty(isAttribute = true)
+    private String path;
+    @JacksonXmlProperty(localName = "wc-status")
+    private WcStatus wcStatus;
+    @JacksonXmlProperty(localName = "repos-status")
     private ReposStatus reposStatus;
 
     public Entry()
@@ -89,22 +87,20 @@ public class StatusData
 
   static class WcStatus
   {
-    @XmlAttribute
+    @JacksonXmlProperty(isAttribute = true)
     private ItemStatus item;
-    @XmlAttribute
-    private String     props;
-    @XmlAttribute
-    private Integer    revision;
-    @XmlAttribute(name = "wc-locked")
-    private Boolean    wcLocked;
-    @XmlAttribute
-    private Boolean    copied;
-    @XmlAttribute
-    private Boolean    switched;
-    @XmlElement
-    private Commit     commit;
-    @XmlElement
-    private Lock       lock;
+    @JacksonXmlProperty(isAttribute = true)
+    private String props;
+    @JacksonXmlProperty(isAttribute = true)
+    private Integer revision;
+    @JacksonXmlProperty(localName = "wc-locked", isAttribute = true)
+    private Boolean wcLocked;
+    @JacksonXmlProperty(isAttribute = true)
+    private Boolean copied;
+    @JacksonXmlProperty(isAttribute = true)
+    private Boolean switched;
+    private Commit commit;
+    private Lock lock;
 
     public WcStatus()
     {
@@ -133,12 +129,11 @@ public class StatusData
 
   static class ReposStatus
   {
-    @XmlAttribute
+    @JacksonXmlProperty(isAttribute = true)
     private String item;
-    @XmlAttribute
+    @JacksonXmlProperty(isAttribute = true)
     private String props;
-    @XmlElement
-    private Lock   lock;
+    private Lock lock;
 
     public ReposStatus()
     {
@@ -157,7 +152,7 @@ public class StatusData
 
   static class Against
   {
-    @XmlAttribute
+    @JacksonXmlProperty(isAttribute = true)
     private Integer revision;
 
     public Against()
@@ -167,12 +162,10 @@ public class StatusData
 
   static class Commit
   {
-    @XmlAttribute
+    @JacksonXmlProperty(isAttribute = true)
     private Integer revision;
-    @XmlElement
-    private String  author;
-    @XmlElement
-    private Date    date;
+    private String author;
+    private Date date;
 
     public Commit()
     {
@@ -196,16 +189,11 @@ public class StatusData
 
   static class Lock
   {
-    @XmlElement
     private String token;
-    @XmlElement
     private String owner;
-    @XmlElement
     private String comment;
-    @XmlElement
-    private Date   created;
-    @XmlElement
-    private Date   expires;
+    private Date created;
+    private Date expires;
 
     public Lock()
     {

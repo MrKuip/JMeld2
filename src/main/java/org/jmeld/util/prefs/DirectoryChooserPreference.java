@@ -16,9 +16,9 @@
  */
 package org.jmeld.util.prefs;
 
-import javax.swing.*;
-
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.JFileChooser;
 
 public class DirectoryChooserPreference
     extends Preference
@@ -30,7 +30,9 @@ public class DirectoryChooserPreference
   private JFileChooser target;
   private String defaultFileName;
 
-  public DirectoryChooserPreference(String preferenceName, JFileChooser target, String defaultFileName)
+  public DirectoryChooserPreference(String preferenceName,
+      JFileChooser target,
+      String defaultFileName)
   {
     super("DirectoryChooser-" + preferenceName);
 
@@ -44,7 +46,8 @@ public class DirectoryChooserPreference
   {
     String fileName;
 
-    fileName = getString(DIRECTORY, defaultFileName);
+    fileName = getString(DIRECTORY,
+                         defaultFileName);
     if (fileName != null)
     {
       target.setCurrentDirectory(new File(fileName));
@@ -71,7 +74,8 @@ public class DirectoryChooserPreference
     try
     {
       fileName = file.getCanonicalPath();
-      putString(DIRECTORY, fileName);
+      putString(DIRECTORY,
+                fileName);
     }
     catch (IOException ex)
     {

@@ -1,9 +1,13 @@
 package org.jmeld.vc.util;
 
-import org.jmeld.util.*;
-
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import org.jmeld.util.Result;
 
 public abstract class VcCmd<T>
 {
@@ -19,12 +23,12 @@ public abstract class VcCmd<T>
   {
     file = file.getAbsoluteFile();
 
-    if(!file.isDirectory())
+    if (!file.isDirectory())
     {
       file = file.getParentFile();
     }
 
-    if(file.isDirectory())
+    if (file.isDirectory())
     {
       workingDirectory = file;
     }
@@ -54,7 +58,7 @@ public abstract class VcCmd<T>
     try
     {
       pb = new ProcessBuilder(command);
-      if(workingDirectory != null)
+      if (workingDirectory != null)
       {
         pb = pb.directory(workingDirectory);
         System.out.println("wd=" + workingDirectory);
@@ -69,9 +73,13 @@ public abstract class VcCmd<T>
 
       baos = new ByteArrayOutputStream();
       is = new BufferedInputStream(p.getInputStream());
-      while ((count = is.read(data, 0, data.length)) != -1)
+      while ((count = is.read(data,
+                              0,
+                              data.length)) != -1)
       {
-        baos.write(data, 0, count);
+        baos.write(data,
+                   0,
+                   count);
       }
       is.close();
 
@@ -87,8 +95,7 @@ public abstract class VcCmd<T>
           errorText.append(text);
         }
         br.close();
-        return Result.FALSE(errorText.toString() + " (exitvalue="
-                            + p.exitValue() + ")");
+        return Result.FALSE(errorText.toString() + " (exitvalue=" + p.exitValue() + ")");
       }
 
       build(baos.toByteArray());
@@ -97,7 +104,8 @@ public abstract class VcCmd<T>
     }
     catch (Exception ex)
     {
-      result = Result.FALSE(ex.getMessage(), ex);
+      result = Result.FALSE(ex.getMessage(),
+                            ex);
       baos = null;
       return result;
     }
@@ -138,7 +146,7 @@ public abstract class VcCmd<T>
 
   private void debug(String text)
   {
-    if(debug)
+    if (debug)
     {
       System.out.println(text);
     }

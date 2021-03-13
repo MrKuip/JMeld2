@@ -1,18 +1,22 @@
 package org.jmeld.util.node;
 
-import org.jmeld.*;
-import org.jmeld.diff.*;
-import org.jmeld.settings.*;
-import org.jmeld.ui.*;
-import org.jmeld.ui.text.*;
-import org.jmeld.util.*;
-import org.jmeld.util.file.*;
-import org.jmeld.util.file.cmd.*;
-
-import javax.swing.tree.*;
-
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import javax.swing.tree.TreeNode;
+import org.jmeld.JMeldException;
+import org.jmeld.diff.JMDiff;
+import org.jmeld.diff.JMRevision;
+import org.jmeld.settings.JMeldSettings;
+import org.jmeld.ui.StatusBar;
+import org.jmeld.ui.text.BufferDocumentIF;
+import org.jmeld.util.Ignore;
+import org.jmeld.util.file.CompareUtil;
+import org.jmeld.util.file.cmd.AbstractCmd;
+import org.jmeld.util.file.cmd.CopyFileCmd;
+import org.jmeld.util.file.cmd.RemoveFileCmd;
 
 public class JMDiffNode
     implements TreeNode
@@ -40,7 +44,8 @@ public class JMDiffNode
   private JMRevision revision;
   private Ignore ignore;
 
-  public JMDiffNode(String name, boolean leaf)
+  public JMDiffNode(String name,
+      boolean leaf)
   {
     this.name = name;
     this.shortName = name;
@@ -48,7 +53,7 @@ public class JMDiffNode
 
     ignore = JMeldSettings.getInstance().getEditor().getIgnore();
 
-    children = new ArrayList();
+    children = new ArrayList<>();
     calculateNames();
   }
 
@@ -59,8 +64,7 @@ public class JMDiffNode
 
   private void initId()
   {
-    id = (nodeLeft != null ? nodeLeft.getName() : "x")
-         + (nodeRight != null ? nodeRight.getName() : "x");
+    id = (nodeLeft != null ? nodeLeft.getName() : "x") + (nodeRight != null ? nodeRight.getName() : "x");
   }
 
   public String getName()
@@ -121,36 +125,43 @@ public class JMDiffNode
     return children;
   }
 
+  @Override
   public Enumeration<JMDiffNode> children()
   {
     return Collections.enumeration(children);
   }
 
+  @Override
   public boolean getAllowsChildren()
   {
     return isLeaf();
   }
 
+  @Override
   public JMDiffNode getChildAt(int childIndex)
   {
     return children.get(childIndex);
   }
 
+  @Override
   public int getChildCount()
   {
     return children.size();
   }
 
+  @Override
   public int getIndex(TreeNode node)
   {
     return children.indexOf(node);
   }
 
+  @Override
   public JMDiffNode getParent()
   {
     return parent;
   }
 
+  @Override
   public boolean isLeaf()
   {
     return leaf;
@@ -167,7 +178,8 @@ public class JMDiffNode
       return;
     }
 
-    parentName = name.substring(0, index);
+    parentName = name.substring(0,
+                                index);
     shortName = name.substring(index + 1);
   }
 
@@ -175,10 +187,11 @@ public class JMDiffNode
       throws Exception
   {
     // TODO: This is NOT OO!
-    if (nodeLeft.exists() && nodeLeft instanceof FileNode
-        && nodeRight instanceof FileNode)
+    if (nodeLeft.exists() && nodeLeft instanceof FileNode && nodeRight instanceof FileNode)
     {
-      return new CopyFileCmd(this, (FileNode) nodeLeft, (FileNode) nodeRight);
+      return new CopyFileCmd(this,
+                             (FileNode) nodeLeft,
+                             (FileNode) nodeRight);
     }
 
     return null;
@@ -188,10 +201,11 @@ public class JMDiffNode
       throws Exception
   {
     // TODO: This is NOT OO!
-    if (nodeRight.exists() && nodeLeft instanceof FileNode
-        && nodeRight instanceof FileNode)
+    if (nodeRight.exists() && nodeLeft instanceof FileNode && nodeRight instanceof FileNode)
     {
-      return new CopyFileCmd(this, (FileNode) nodeRight, (FileNode) nodeLeft);
+      return new CopyFileCmd(this,
+                             (FileNode) nodeRight,
+                             (FileNode) nodeLeft);
     }
 
     return null;
@@ -203,7 +217,8 @@ public class JMDiffNode
     // TODO: This is NOT OO!
     if (nodeLeft instanceof FileNode)
     {
-      return new RemoveFileCmd(this, (FileNode) nodeLeft);
+      return new RemoveFileCmd(this,
+                               (FileNode) nodeLeft);
     }
 
     return null;
@@ -215,7 +230,8 @@ public class JMDiffNode
     // TODO: This is NOT OO!
     if (nodeRight instanceof FileNode)
     {
-      return new RemoveFileCmd(this, (FileNode) nodeRight);
+      return new RemoveFileCmd(this,
+                               (FileNode) nodeRight);
     }
 
     return null;
@@ -249,7 +265,9 @@ public class JMDiffNode
       return;
     }
 
-    equals = CompareUtil.contentEquals(nodeLeft, nodeRight, ignore);
+    equals = CompareUtil.contentEquals(nodeLeft,
+                                       nodeRight,
+                                       ignore);
     setCompareState(equals ? Compare.Equal : Compare.NotEqual);
   }
 
@@ -268,7 +286,8 @@ public class JMDiffNode
     if (nodeLeft != null)
     {
       documentLeft = nodeLeft.getDocument();
-      StatusBar.getInstance().setState("Reading left : %s", nodeLeft.getName());
+      StatusBar.getInstance().setState("Reading left : %s",
+                                       nodeLeft.getName());
       if (documentLeft != null)
       {
         documentLeft.read();
@@ -278,8 +297,8 @@ public class JMDiffNode
     if (nodeRight != null)
     {
       documentRight = nodeRight.getDocument();
-      StatusBar.getInstance()
-          .setState("Reading right: %s", nodeRight.getName());
+      StatusBar.getInstance().setState("Reading right: %s",
+                                       nodeRight.getName());
       if (documentRight != null)
       {
         documentRight.read();
@@ -291,7 +310,9 @@ public class JMDiffNode
     left = documentLeft == null ? null : documentLeft.getLines();
     right = documentRight == null ? null : documentRight.getLines();
 
-    revision = diff.diff(left, right, ignore);
+    revision = diff.diff(left,
+                         right,
+                         ignore);
     StatusBar.getInstance().setState("Ready calculating differences");
     StatusBar.getInstance().stop();
   }

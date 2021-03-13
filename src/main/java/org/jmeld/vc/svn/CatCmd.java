@@ -1,10 +1,9 @@
 package org.jmeld.vc.svn;
 
-import org.jmeld.util.*;
-import org.jmeld.vc.*;
-import org.jmeld.vc.util.*;
-
-import java.io.*;
+import java.io.File;
+import org.jmeld.util.Result;
+import org.jmeld.vc.BaseFile;
+import org.jmeld.vc.util.VcCmd;
 
 public class CatCmd
     extends VcCmd<BaseFile>
@@ -19,8 +18,12 @@ public class CatCmd
 
   public Result execute()
   {
-    super.execute("svn", "cat", "--non-interactive", "-r", "BASE", file
-        .getPath());
+    super.execute("svn",
+                  "cat",
+                  "--non-interactive",
+                  "-r",
+                  "BASE",
+                  file.getPath());
 
     return getResult();
   }
@@ -39,7 +42,9 @@ public class CatCmd
     {
       result = new SubversionVersionControl().getBaseFile(new File(args[0]));
       byteArray = result.getByteArray();
-      System.out.write(byteArray, 0, byteArray.length);
+      System.out.write(byteArray,
+                       0,
+                       byteArray.length);
     }
     catch (Exception ex)
     {
